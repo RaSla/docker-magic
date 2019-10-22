@@ -13,7 +13,7 @@
 
 1) **Make `docker-compose.yml` self-sufficient** - all required services MUST BE listed in `docker-compose.yml` !
 
-    `docker-compose.yml` MUST BE workable without `docker-compose.override.yml`.
+    `docker-compose.yml` MUST BE workable without `docker-compose.override.yml`.  
     `docker-compose.yml` MAY necessarily require variables from a `.env` file
 
     Sometimes, users put description of some service(s) in `docker-compose.override.yml` (it's good when such a service is optional),
@@ -68,6 +68,10 @@
 
 1) **Mask env/user-specific files in .gitignore file** - do not put private data and current-configs in git-repo!
     ```gitignore
+    ## IDE
+    .idea
+    .vscode
+    
     # Current-config
     .env
     docker-compose.override.yml

@@ -1,0 +1,8 @@
+## IDE
+.idea
+.vscode
+
+## Backup- and local- version
+*~
+*.bak
+*.local

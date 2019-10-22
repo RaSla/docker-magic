@@ -1,0 +1,6 @@
+## All hidden
+.[a-z]
+
+## DevOps staff
+Dockerfile
+*.md
