@@ -44,8 +44,8 @@ yamllint .
 # Production and Development advices
 * Use **[Alpine Linux](https://alpinelinux.org/)** docker-images as base, if it possible
 (`postgres:12-alpine` instead of `postgres:12`, for example)
-* Stay tuned for base docker-images used by your Applications
-* Update your docker-images ASAP, when the base-images is updated
+* Update your docker-images ASAP, when the base-image is updated
+* Use **.dockerignore** file - prevent unnecessary files from appearing in the docker-image
 
 ## Development environment
 1) The developer's docker-image **may exclude the source code** for interpreted languages (like PHP, Python etc),
