@@ -1,0 +1,35 @@
+---
+version: '2.4'
+services:
+
+  # Adminer.org - Database management in a single PHP file (for MySQL, PostgreSQL, SQLite and more)
+  adminer:
+    container_name: adminer
+    image: adminer:4
+    ports:
+      - "${ADMINER_PORT}:8080"
+    restart: always
+
+  mysql:
+    container_name: mysql
+    image: percona:5.6
+    environment:
+      - "MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}"
+      - "MYSQL_DATABASE=${MYSQL_DATABASE}"
+      - "MYSQL_USER=${MYSQL_USER}"
+      - "MYSQL_PASSWORD=${MYSQL_PASSWORD}"
+    ports:
+      - "3306:3306"
+    restart: always
+    volumes:
+      # conf.d:  MySQL 5.6-5.7 = /etc/mysql/conf.d ; Percona 5.6-5.7 = /etc/my.cnf.d ;
+      # conf.d:  Percona 8 = /etc/percona-server.conf.d/
+      - ./mysql/conf.d:/etc/my.cnf.d
+      - ./mysql/data:/var/lib/mysql
+      - ./mysql/log:/var/log/mysql
+
+# docker network create app
+networks:
+  default:
+    external:
+      name: "app"

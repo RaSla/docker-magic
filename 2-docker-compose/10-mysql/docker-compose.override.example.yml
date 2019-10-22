@@ -1,0 +1,8 @@
+version: '2.4'
+services:
+
+  ## Run MySQL as App-User (no problems with Read/Write files/dirs)
+  mysql:
+    tmpfs:
+      - "/var/run/mysqld:uid=${USER_UID}"
+    user: "${USER_UID}:${USER_GID}"

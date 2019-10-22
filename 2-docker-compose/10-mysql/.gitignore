@@ -1,0 +1,11 @@
+# Current-config
+.env
+docker-compose.override.yml
+
+## Data
+mysql/data/*
+## Logs
+mysql/log/*
+
+## SQL dumps
+sql_dumps
