@@ -1,0 +1,4 @@
+[mysqld]
+
+# 2. Optional mysqld settings: your regular MyISAM tuning and such
+key_buffer_size = 64M  # ~30-40% RAM
