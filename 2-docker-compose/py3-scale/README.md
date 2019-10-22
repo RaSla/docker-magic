@@ -38,7 +38,8 @@ Right now we have **2** docker-containers of the  `py3` service, as described in
     scale: 2
 ```
 
-Let's scale our `py3` service from 2 instance to 4 instances.
+### Scale UP
+Let's scale our `py3` service from 2 instances to 4 instances.
 ```bash
 docker-compose scale py3=4
 
@@ -49,21 +50,53 @@ Creating py3-scale_py3_4 ... done
 ``` 
 This will scale our `py3` service now.  
     
-Now refresh URL [http://localhost/py3/hits] in web-browser several times
-or **`curl http://localhost/py3/hits`** in TTY.  
-We will see now, the number of "My hostname" values increased up to 4 different strings.
+Now refresh URL [http://localhost/] in web-browser several times
+or **`curl http://localhost/`** in TTY.  
+We will see now, that the number of **"My hostname"** unique values has been increased up to 4.
 
 To get a deeper understanding tail the logs of the stack to watch what happens each time you access your web services.
 ```bash
 docker-compose logs
 
-    py3_4   | 172.17.0.7 - - [22/Oct/2019 08:39:41] "GET /py3/hits HTTP/1.1" 200 -
-    py3_1   | 172.17.0.7 - - [22/Oct/2019 08:39:43] "GET /py3/hits HTTP/1.1" 200 -
-    py3_2   | 172.17.0.7 - - [22/Oct/2019 08:39:46] "GET /py3/hits HTTP/1.1" 200 -
-    py3_3   | 172.17.0.7 - - [22/Oct/2019 08:39:48] "GET /py3/hits HTTP/1.1" 200 -
-    py3_4   | 172.17.0.7 - - [22/Oct/2019 08:39:49] "GET /py3/hits HTTP/1.1" 200 -
+    py3_4   | 172.17.0.7 - - [22/Oct/2019 08:39:41] "GET / HTTP/1.1" 200 -
+    py3_1   | 172.17.0.7 - - [22/Oct/2019 08:39:43] "GET / HTTP/1.1" 200 -
+    py3_2   | 172.17.0.7 - - [22/Oct/2019 08:39:46] "GET / HTTP/1.1" 200 -
+    py3_3   | 172.17.0.7 - - [22/Oct/2019 08:39:48] "GET / HTTP/1.1" 200 -
+    py3_4   | 172.17.0.7 - - [22/Oct/2019 08:39:49] "GET / HTTP/1.1" 200 -
 ```
 Here's the output from my docker-compose logs after I curled my application 5 times so it is clear that the round-robin is sent to all 5 web service containers.
+
+### Scale DOWN
+The same way, you can scale our `py3` service from 4 instances to 1 instance.
+```bash
+docker-compose scale py3=1
+
+Stopping and removing py3-scale_py3_2 ... done
+Stopping and removing py3-scale_py3_3 ... done
+Stopping and removing py3-scale_py3_4 ... done
+``` 
+Now refresh URL [http://localhost/] in web-browser several times.
+And you will see that "My hostname" is only one.
+
+## Redis
+**[Redis](https://redis.io/)** has been added to this Composition to show you,
+that each `py3` docker-container works independently and correctly with shared resources.
+
+You can see it by URL [http://localhost/py3/hits] .
+
+Each request to [http://localhost/py3/hits] will increment the Counter stored in Redis.
+
+### Persistent or In-Memory mode
+By defaults Redis runs in Persistent-Mode (saving data to the Disk).
+
+To switch Redis to "In-Memory only" mode, we give it additional parameters for launching docker-container:
+```yaml
+  redis:
+    image: redis:5-alpine
+    # DO NOT save to disk;  DB-count 16 -> 2
+    command: ["sh", "-c", "exec redis-server --save \"\" --databases 2 "]
+```
+You can remove or customize `--save \"\"` argument, or comment entire **"command"** line, if you need.
 
 # Notes
 
