@@ -5,14 +5,15 @@ I divided **Docker-Magic** into 3 levels:
 1. **Docker** - use of **single** docker container, including topics:
     * Get docker-image;
     * Make docker-image (with Dockerfile);
-    * Run docker-image;
-    * Run docker-image with custom params (port-mapping, disk-volumes, env-vars);
+    * Run docker-container;
+    * Run docker-container with custom params (env-vars, port-mapping, disk-volumes, as specific user);
 1. **Docker-compose** - use of **compositions** of Docker-containers (on a single server), including topics:
     * Combine few docker-images into the Application
     * Configure Application (for multi envs/users)
     * Mapping files/dirs between docker-containers and Host-OS
     * Mapping TCP/UDP ports between docker-containers and Host-OS
-1. **Kubernetes** - use of **orchestrator** (on multi-server cluster)
+    * Can limit resources to docker-containers
+1. **Kubernetes** - use of **orchestrator** (in multi-server cluster)
 
 ## Requirements
 * Install **[Docker-CE](https://docs.docker.com/install/)**  

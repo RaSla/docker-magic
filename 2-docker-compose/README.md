@@ -1,18 +1,19 @@
 # Docker-compose
 
-**Docker-compose** - make **compositions** of Docker-containers (on a single or very few servers).
+**Docker-compose** - make a **composition** of Docker-containers (on one server, usually).
 * Combine few docker-images into the Application
 * Configure Application (for multi envs/users)
-* Getting ENV-vars from `.env` file inside docker-compose dir
+* Setting ENV-vars from `.env` file inside docker-compose dir
 * Mapping files/dirs between docker-containers and Host-OS
 * Mapping TCP/UDP ports between docker-containers and Host-OS
+* Can limit resources to docker-containers
+* Can scale services horizontally
 
 ## The right way to use
 
-1) **Make `docker-compose.yml` self-sufficient** - all services MUST BE listed in docker-compose.yml !
-  
-    `docker-compose.yml` SHOULD BE self-sufficient - Compose should be workable without `docker-compose.override.yml`.
-    
+1) **Make `docker-compose.yml` self-sufficient** - all required services MUST BE listed in `docker-compose.yml` !
+
+    `docker-compose.yml` MUST BE workable without `docker-compose.override.yml`.
     `docker-compose.yml` MAY necessarily require variables from a `.env` file
 
     Sometimes, users put description of some service(s) in `docker-compose.override.yml` (it's good when such a service is optional),
