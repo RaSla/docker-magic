@@ -40,3 +40,25 @@ sudo pip3 install yamllint==1.16.0
 ## PRE-commit check
 yamllint .
 ```
+
+# Production and Development advices
+* Use **[Alpine Linux](https://alpinelinux.org/)** docker-images as base, if it possible
+(`postgres:12-alpine` instead of `postgres:12`, for example)
+* Stay tuned for base docker-images used by your Applications
+* Update your docker-images ASAP, when the base-images is updated
+
+## Development environment
+1) The developer's docker-image **may exclude the source code** for interpreted languages (like PHP, Python etc),
+if it is sufficient to build the Runtime docker-image and mount the Sources as a Volume to the docker-container.
+
+1) Developer's docker-images **may contain** some **useful tools**, such as XDebug (for PHP), etc.
+ that are not needed in the production docker-images.
+
+## Production environment
+1) The Production docker-image **MUST contain all** Application files **inside** docker-image !  
+The only exception is - connecting to the production docker-container external persistent storage
+ for the Logs and Data (like: MySQL data-dir, shared assets-folder for Samba/NFS, etc).
+
+1) The Production docker-image **MUST NOT contain** any **unnecessary** tools and files !
+    * Less files - less docker-image size;
+    * Less binary - less potential vulnerabilities

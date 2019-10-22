@@ -8,7 +8,8 @@ cd py3-scale
 docker-compose up
 ```
 
-Open URL [http://localhost/] in your web-browser.  
+Open URL [localhost/](http://localhost/) in your web-browser.
+
 Refresh the web-page several times - in the TTY-console you will see,
 that your requests are served by 2 docker-containers of the `py3` service:
 ```text
@@ -18,7 +19,7 @@ py3_1    | 172.18.0.7 - - [22/Oct/2019 08:38:56] "GET / HTTP/1.1" 200 -
 py3_2    | 172.18.0.7 - - [22/Oct/2019 08:38:57] "GET / HTTP/1.1" 200 -
 ```
 
-This means that the composition is working as it should. Stop it and run Compose in Daemon mode:
+This means that the Composition is working as it should. Stop it and run Composition in Daemon mode:
 ```bash
    Press [CTRL]+[C] in TTY-console to stop Compose
 
@@ -48,9 +49,8 @@ Starting py3-scale_py3_2 ... done
 Creating py3-scale_py3_3 ... done
 Creating py3-scale_py3_4 ... done
 ``` 
-This will scale our `py3` service now.  
-    
-Now refresh URL [http://localhost/] in web-browser several times
+
+Now refresh URL [localhost/](http://localhost/) in web-browser several times
 or **`curl http://localhost/`** in TTY.  
 We will see now, that the number of **"My hostname"** unique values has been increased up to 4.
 
@@ -64,10 +64,10 @@ docker-compose logs
     py3_3   | 172.17.0.7 - - [22/Oct/2019 08:39:48] "GET / HTTP/1.1" 200 -
     py3_4   | 172.17.0.7 - - [22/Oct/2019 08:39:49] "GET / HTTP/1.1" 200 -
 ```
-Here's the output from my docker-compose logs after I curled my application 5 times so it is clear that the round-robin is sent to all 5 web service containers.
+Here's the output from my docker-compose logs after I curled my application 5 times so it is clear that the round-robin is sent to all 4 `py3` docker-containers.
 
 ### Scale DOWN
-The same way, you can scale our `py3` service from 4 instances to 1 instance.
+The same way, you can scale `py3` service from 4 instances to 1 instance.
 ```bash
 docker-compose scale py3=1
 
@@ -75,16 +75,16 @@ Stopping and removing py3-scale_py3_2 ... done
 Stopping and removing py3-scale_py3_3 ... done
 Stopping and removing py3-scale_py3_4 ... done
 ``` 
-Now refresh URL [http://localhost/] in web-browser several times.
-And you will see that "My hostname" is only one.
+Now check URL [localhost/](http://localhost/) in web-browser or CURL several times.
+And you will see that "My hostname" value is only one.
 
 ## Redis
 **[Redis](https://redis.io/)** has been added to this Composition to show you,
 that each `py3` docker-container works independently and correctly with shared resources.
 
-You can see it by URL [http://localhost/py3/hits] .
+You can see it by URL [localhost/py3/hits](http://localhost/py3/hits) .
 
-Each request to [http://localhost/py3/hits] will increment the Counter stored in Redis.
+Each request to [localhost/py3/hits](http://localhost/py3/hits) will increment the Counter in Redis.
 
 ### Persistent or In-Memory mode
 By defaults Redis runs in Persistent-Mode (saving data to the Disk).
@@ -98,6 +98,7 @@ To switch Redis to "In-Memory only" mode, we give it additional parameters for l
 ```
 You can remove or customize `--save \"\"` argument, or comment entire **"command"** line, if you need.
 
+
 # Notes
 
 ## Compose file version
@@ -110,7 +111,8 @@ and do not support **"scale: X"** var.
 A benefit of running the HAProxy from Dockercloud is it automatically
 detects the coming and going of docker-containers and doesn't require any changes.
 
-Without this load balancer (dockercloud/haproxy) you will need to edit and restart Compose for scaling service.
+Without [dockercloud/haproxy](https://hub.docker.com/r/dockercloud/haproxy) load balancer
+ you will need to edit and restart Composition for scaling service.
 
 ## container_name is'n applicable with SCALE
 You CAN'T use **container_name** and **scale** together,
