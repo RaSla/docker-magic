@@ -1,0 +1,103 @@
+version: '2.4'
+
+services:
+
+  prometheus:
+    image: prom/prometheus  # v2.13.1
+    container_name: prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--storage.tsdb.retention.time=${PROM_RETENTION_TIME}"
+      - "--web.console.libraries=/etc/prometheus/console_libraries"
+      - "--web.console.templates=/etc/prometheus/consoles"
+      - "--web.enable-lifecycle"
+    #ports:
+    #  - "${PROM_PORT}:9090"
+    restart: always
+    volumes:
+      - ./prometheus/:/etc/prometheus/
+      - ./prometheus_data:/prometheus
+
+  grafana:
+    image: grafana/grafana  # 6.4.4
+    container_name: grafana
+    depends_on:
+      - prometheus
+    environment:
+      # https://grafana.com/docs/installation/docker/
+      - "GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}"
+      - "GF_SECURITY_ALLOW_EMBEDDING=true"
+      - "GF_SECURITY_COOKIE_SAMESITE=none"
+      - "GF_SERVER_ROOT_URL=${GRAFANA_ROOT_URL}"
+    ports:
+      - "${GRAFANA_PORT}:3000"
+    restart: always
+    volumes:
+      - ./grafana_data:/var/lib/grafana
+
+### EXPORTERS
+  cadvisor:
+    image: google/cadvisor:v0.33.0
+    container_name: cadvisor
+    #ports:
+    #  - 8081:8080
+    restart: always
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+
+## DO NOT USE Node_exporter  in  Docker!  Prefer to install it on Host-OS !!!
+#  node_exporter:
+#    image: prom/node-exporter  # v0.18.1
+#    container_name: node-exporter
+#    command:
+#      - '--path.procfs=/host/proc'
+#      - '--path.sysfs=/host/sys'
+#      - '--path.rootfs=/rootfs'
+#      - '--collector.filesystem.ignored-mount-points'
+#      - '^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)'
+#    hostname: "${NE_HOSTNAME}"
+#    #ports:
+#    #  - "${NE_PORT}:9100"
+#    restart: always
+#    volumes:
+#      - /proc:/host/proc:ro
+#      - /sys:/host/sys:ro
+#      - /:/rootfs:ro
+
+### Alert Manager
+#  alertmanager:
+#    image: prom/alertmanager  # v0.18.0
+#    container_name: alertmanager
+#    command:
+#      - '--config.file=/etc/alertmanager/config.yml'
+#      - '--storage.path=/alertmanager'
+#    ports:
+#      - 9093:9093
+#    restart: always
+#    volumes:
+#      - ./alertmanager/:/etc/alertmanager/
+#
+#  alertmanager_bot:
+#    image: metalmatze/alertmanager-bot:0.4.0
+#    environment:
+#      - ALERTMANAGER_URL=http://<alertmngerURL>:9093  # откуда бот получает алерт
+#      - LISTEN_ADDR=0.0.0.0:8080
+#      - BOLT_PATH=/data/bot.db
+#      - STORE=bolt
+#      - TELEGRAM_ADMIN=<TelegramAdminID>  # ваш ID в телеграм
+#      - TELEGRAM_TOKEN=<TelegramBotToken>  # токен бота
+#      - TEMPLATE_PATHS=/templates/default.tmpl
+#    volumes:
+#      - /srv/monitoring/alertmanager-bot:/data
+#    ports:
+#      - "8080:8080"
+
+# docker network create app
+networks:
+  default:
+    external:
+      name: "app"
