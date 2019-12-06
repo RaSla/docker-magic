@@ -1,0 +1,11 @@
+.env
+docker-compose.yml
+
+## GitLab stuff
+!gitlab/ssl/
+gitlab/
+
+## Backup- and local- version
+*~
+*.bak
+*.local

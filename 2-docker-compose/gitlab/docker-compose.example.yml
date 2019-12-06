@@ -1,0 +1,64 @@
+version: '2.4'
+services:
+
+  gitlab:
+    image: gitlab/gitlab-ce:latest  # 12.4.5-ce.0  /  12.5.3-ce.0
+    container_name: gitlab
+    depends_on:
+      - gl_redis
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'https://$GITLAB_HOSTNAME'
+        nginx['listen_https'] = true
+        nginx['redirect_http_to_https'] = true
+        nginx['ssl_certificate'] = "$SSL_FULLCHAIN"
+        nginx['ssl_certificate_key'] = "$SSL_PRIVKEY"
+
+        gitlab_rails['time_zone'] = 'UTC'
+        gitlab_rails['gitlab_shell_ssh_port'] = $GITLAB_SSH_PORT
+
+        gitlab_rails['registry_enabled'] = true
+        registry_external_url 'https://$GITLAB_HOSTNAME:$GITLAB_REGISTRY_PORT'
+        registry_nginx['ssl_certificate']   = "$SSL_FULLCHAIN"
+        registry_nginx['ssl_certificate_key'] = "$SSL_PRIVKEY"
+        #
+        monitoring_role['enable'] = false
+        alertmanager['enable'] = false
+        grafana['enable'] = false
+        prometheus['enable'] = false
+        gitlab_exporter['enable'] = false
+        node_exporter['enable'] = false
+        postgres_exporter['enable'] = false
+        pgbouncer_exporter['enable'] = false
+        redis_exporter['enable'] = false
+        #
+        consul['enable'] = false
+        #
+        redis['enable'] = false
+        gitlab_rails['redis_host'] = 'gl_redis'
+        gitlab_rails['redis_port'] = 6379
+    hostname: "gitlab"
+    volumes:
+      - "./gitlab/etc:/etc/gitlab"
+      - "./gitlab/ssl:/ssl:ro"
+      - "./gitlab/var:/var/opt/gitlab"
+      - "./gitlab/log:/var/log/gitlab"
+    ports:
+      - "$GITLAB_SSH_PORT:22"    # SSH
+      - "80:80"
+      - "443:443"
+      - "$GITLAB_REGISTRY_PORT:$GITLAB_REGISTRY_PORT"  # Docker Registry
+    restart: always
+
+  gl_redis:
+    image: redis:5-alpine
+    container_name: gl_redis
+    # DO NOT save to disk;  DB-count 16 -> 2
+    command: ["redis-server", "--save", "''", "--databases", "2"]
+    restart: always
+
+# docker network create app
+networks:
+  default:
+    external:
+      name: "app"

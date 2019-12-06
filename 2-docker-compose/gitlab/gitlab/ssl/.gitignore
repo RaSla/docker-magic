@@ -1,0 +1,9 @@
+## SSL-certs
+*.pem
+*.crt
+*.key
+
+## Backup- and local- version
+*~
+*.bak
+*.local
