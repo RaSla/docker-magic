@@ -37,7 +37,7 @@ OR you can use frontend Nginx for GitLab:
 ```yaml
         nginx['listen_port'] = 80
         nginx['listen_https'] = false
-        nginx['redirect_http_to_https'] = true
+        nginx['redirect_http_to_https'] = false
         nginx['proxy_set_headers'] = {
           'Host' => '$GITLAB_HOSTNAME',
           'X-Forwarded-Proto' => 'https',
