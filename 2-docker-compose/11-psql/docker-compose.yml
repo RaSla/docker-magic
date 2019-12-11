@@ -1,0 +1,29 @@
+---
+version: '2.4' # Docker-CE 17.12 = 2.4 MAX; 'docker.io=17.12.1-0ubuntu' [u18.04] support 2.4 MAX
+services:
+
+  adminer:
+    container_name: adminer
+    image: adminer:4
+    ports:
+      - 80:8080
+    #restart: always
+
+  psql:
+    container_name: psql
+    image: postgres:12-alpine
+    volumes:
+      - ./psql/data:/var/lib/postgresql/data
+    environment:
+# Super-User: by default POSTGRES_USER="postgres"
+#      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    ports:
+      - 5432:5432
+    restart: always
+
+# docker network create app
+networks:
+  default:
+    external:
+      name: "app"
