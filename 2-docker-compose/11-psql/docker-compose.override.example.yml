@@ -2,7 +2,7 @@
 version: '2.4'
 services:
   # user UID & GID  MUST BE  equal local user ID
-  # rasla@devops-rasla:~/git/autoclassics/web$ id
+  # rasla@linux-box:~/git/$ id
   # uid=1000(rasla) gid=1000(rasla) ...
   psql:
-    user: 1000:1000
+    user: "${USER_UID}:${USER_GID}"

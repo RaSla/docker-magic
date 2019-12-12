@@ -1,3 +1,10 @@
+##  Put this file as ~/.pgpass !
+#  Docker-compose .env.example
 127.0.0.1:5432:postgres:postgres:password
-#  Kickstart
-127.0.0.1:5432:postgres:demo:password2
+#  Another server
+psql-server2:5432:demo_db:demo_user:password2
+#  PgBouncer
+pgbouncer:6432:pgbouncer:admin:PaSsW0rD
+## Usage
+# psql -h psql-server2 -U demo_user demo_db
+# psql -h pgbouncer -p 6432 -U admin pgbouncer
