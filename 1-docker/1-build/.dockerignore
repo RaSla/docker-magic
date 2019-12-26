@@ -1,0 +1,14 @@
+## Ignore all git- and docker- stuff, hidden files
+Dockerfile*
+.[a-z]*
+
+## Backup- and local- version
+*.bak
+*.local
+*~
+
+## Ignore MarkDown-Docs
+*.md
+
+## DevOps-stuff
+ops

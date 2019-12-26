@@ -1,8 +1,7 @@
 ---
 version: '2.4'
 services:
-  # user UID & GID  MUST BE  equal local user ID
-  # rasla@linux-box:~/git/$ id
-  # uid=1000(rasla) gid=1000(rasla) ...
+
+  ## Run PostgreSQL as App-User (no problems with Read/Write files/dirs)
   psql:
     user: "${USER_UID}:${USER_GID}"

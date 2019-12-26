@@ -34,7 +34,7 @@ uid=1000(rasla) gid=1000(rasla)
 nano .env
 
 ## Change owner for Data
-docker run -it --rm -v $(pwd):/mnt alpine chown -R 1000:1000 /mnt
+docker run -it --rm -v $(pwd):/mnt alpine chown -R 1000:1000 /mnt/psql
 
 ## Make 'docker-compose.override.yml'
 cp docker-compose.override.example.yml docker-compose.override.yml
