@@ -1,8 +1,10 @@
 .env
-docker-compose.yml
+docker-compose.override.yml
 
-## SSL Certificates
+## SSL Certificates and DH parameters
+conf/_dhparam.pem
 live/
+!live/snakeoil/*.pem
 ## Logs
 log/
 

@@ -28,7 +28,7 @@ server {
   listen [::]:443 ssl http2;
   server_name  www.rasla.ru;
 
-  access_log off; /var/log/nginx/www.rasla.ru-access.log  combined  buffer=4k flush=5s;  # if=$loggable;
+  access_log off; #/var/log/nginx/www.rasla.ru-access.log  combined  buffer=4k flush=5s;  # if=$loggable;
   error_log  /var/log/nginx/www.rasla.ru-error.log  error;
 
   root   /var/www/html;
