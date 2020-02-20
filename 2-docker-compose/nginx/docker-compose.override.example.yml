@@ -1,0 +1,12 @@
+version: '2.4'
+services:
+# user UID & GID  MUST BE  equal local user ID
+# rasla@devops-rasla:~/git/project/repo$ id
+# uid=1000(rasla) gid=1000(rasla) ...
+  nginx:
+    sysctls:
+      net.ipv4.ip_unprivileged_port_start: 0
+    tmpfs:
+      - "/run:uid=${USER_UID}"
+      - "/var/cache/nginx:uid=${USER_UID}"
+    user: "${USER_UID}:${USER_GID}"

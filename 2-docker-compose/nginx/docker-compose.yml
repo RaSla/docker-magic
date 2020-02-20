@@ -1,0 +1,24 @@
+version: '2.4'
+services:
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    hostname: "nginx"
+# CPU Affinity, ex.: "0" / "2,3"
+    cpuset: "0"
+    ports:
+      - "80:80"
+      - "443:443"
+    restart: always
+    volumes:
+      - ./conf:/etc/nginx/conf.d:ro
+      - ./live:/etc/letsencrypt/live:ro
+      - ./log:/var/log/nginx
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+
+# docker network create app
+networks:
+  default:
+    external:
+      name: "app"

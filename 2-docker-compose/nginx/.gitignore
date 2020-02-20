@@ -1,0 +1,12 @@
+.env
+docker-compose.yml
+
+## SSL Certificates
+live/
+## Logs
+log/
+
+## Backup- and local- version
+*~
+*.bak
+*.local
