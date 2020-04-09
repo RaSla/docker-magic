@@ -1,0 +1,8 @@
+---
+version: '2.4'
+services:
+
+  ## Create Users and DBs for Jira and Confluence
+  atl-psql:
+    volumes:
+      - ./psql/init.d:/docker-entrypoint-initdb.d

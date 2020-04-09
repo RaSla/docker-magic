@@ -61,32 +61,36 @@ docker-compose logs
 ### Backup
 
 ```bash
-## Docker-compose
+## Backup Single DB
 docker-compose exec -T psql pg_dump --clean --if-exists -U postgres -d postgres > dump.sql
 docker-compose exec -T psql pg_dump --clean --if-exists -U postgres -d postgres | gzip > dump.sql.gz
 
-## Kubernetes
-kubectl exec -i postgres-0 -- pg_dump --clean --if-exists -U postgres -d old > old-dump.sql
-kubectl exec -i postgres-0 -- pg_dump --clean --if-exists -U postgres -d old | gzip > old-dump.sql.gz
+## Backup ALL psql DBs (and Users with Passwords)
+docker-compose exec -T psql \
+  time pg_dumpall --clean --if-exists -U postgres  |  gzip > dump_all.sql.gz  
 ```
 
 ### Restore
 
 ```bash
-## Docker-compose
+## Restore Single DB
 cat  dump.sql    | docker-compose exec -T psql psql -U postgres -d postgres
 zcat dump.sql.gz | docker-compose exec -T psql psql -U postgres -d postgres
 
-## Kubernetes
-cat  db-dump.sql    | kubectl exec -i postgres-0 -- psql -U postgres -d postgres
-zcat db-dump.sql.gz | kubectl exec -i postgres-0 -- psql -U postgres -d postgres
+## Restore ALL psql DBs (and Users with Passwords)
+zcat dump_all.sql.gz |  docker-compose exec -T psql \
+  time psql -U postgres postgres
+
+## Analyze all DBs (mandatory after Restore DB) 
+docker-compose exec psql \
+  time vacuumdb --all --analyze -U postgres
 ```
 
-### Analize
+### Analyze
 ```bash
 time vacuumdb --dbname=postgres --analyze -U postgres
-time docker-compose exec -T psql vacuumdb --dbname=postgres --analyze -U postgres
-time kubectl exec -i postgres-0 -- vacuumdb --dbname=postgres --analyze -U postgres
+time docker-compose exec -T psql vacuumdb --all --analyze -U postgres
+time kubectl exec -i postgres-0 -- vacuumdb --all --analyze -U postgres
 ```
 
 ### Passwordless connection in console

@@ -2,7 +2,13 @@
 .idea
 .vscode
 
+## Confidentially
+.acme.sh
+.env
+acme-dns.sh.env
+
 ## Backup- and local- version
-*~
 *.bak
 *.local
+*~
+*.log

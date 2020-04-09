@@ -1,0 +1,94 @@
+---
+version: '2.4'
+
+services:
+
+  atl-jira:
+    image: atlassian/jira-software:8.8  # 8.5 Enterprise Release
+    container_name: atl-jira
+    depends_on:
+      - atl-psql
+    environment:
+      - ATL_PROXY_NAME=${JIRA_PROXY_NAME}
+      - ATL_PROXY_PORT=443
+      - ATL_TOMCAT_PORT=8080
+      - ATL_TOMCAT_SECURE=true
+      - ATL_TOMCAT_SCHEME=https
+      - JVM_MINIMUM_MEMORY=768m
+      - JVM_MAXIMUM_MEMORY=1024m
+      #- JVM_SUPPORT_RECOMMENDED_ARGS='-Datlassian.recovery.password=${JIRA_RECOVERY_PASSWORD}'  # recovery_admin / atlassian.recovery.password
+    restart: always
+    volumes:
+      - ./jira:/var/atlassian/application-data/jira
+      #- ./mysql-connector-java-5.1.48.jar:/opt/atlassian/jira/lib/mysql-connector-java-5.1.48.jar
+
+  atl-confluence:
+    image: atlassian/confluence-server:7.3  # 6.13, 7.4 Enterprise Release
+    container_name: atl-confluence
+    depends_on:
+      - atl-psql
+    environment:
+      - ATL_PROXY_NAME=${CONFLU_PROXY_NAME}
+      - ATL_PROXY_PORT=443
+      - ATL_TOMCAT_PORT=8090
+      - ATL_TOMCAT_SECURE=true
+      - ATL_TOMCAT_SCHEME=https
+      - JVM_MINIMUM_MEMORY=1024m
+      - JVM_MAXIMUM_MEMORY=1024m
+      #- JVM_SUPPORT_RECOMMENDED_ARGS='-Datlassian.recovery.password=${CONFLU_RECOVERY_PASSWORD}'  # recovery_admin / atlassian.recovery.password
+    restart: always
+    volumes:
+      - ./confluence:/var/atlassian/application-data/confluence
+      #- ./mysql-connector-java-5.1.48.jar:/opt/atlassian/confluence/lib/mysql-connector-java-5.1.48.jar
+
+#  adminer:
+#    container_name: adminer
+#    image: adminer:4
+#    ports:
+#      - "${ADMINER_PORT}:8080"
+#    restart: always
+
+  atl-psql:
+    image: postgres:10-alpine
+    container_name: atl-psql
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+## init.d/00-init-jira.sh
+      - JIRA_DB=${JIRA_DB}
+      - JIRA_USER=${JIRA_USER}
+      - JIRA_PASSWORD=${JIRA_PASSWORD}
+## init.d/00-init-confluence.sh
+      - CONFLU_DB=${CONFLU_DB}
+      - CONFLU_USER=${CONFLU_USER}
+      - CONFLU_PASSWORD=${CONFLU_PASSWORD}
+    #ports:
+    #  - 5432:5432
+    restart: always
+    volumes:
+      - ./psql/data:/var/lib/postgresql/data
+
+#  atl-mysql:
+#    image: percona:5.7
+#    container_name: atl-mysql
+#    environment:
+#      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+#      - MYSQL_DATABASE=${JIRA_DB}
+#      - MYSQL_USER=${JIRA_USER}
+#      - MYSQL_PASSWORD=${JIRA_PASSWORD}
+#    ports:
+#      - 3306:3306
+#    restart: always
+#    tmpfs:
+#      - "/var/run/mysqld:uid=${USER_UID}"
+#    user: "${USER_UID}:${USER_GID}"
+#    volumes:
+## conf.d:  MySQL 5.6-5.7 = /etc/mysql/conf.d ; Percona 5.6-5.7 = /etc/my.cnf.d ; Percona 8 = ??? /etc/percona-server.conf.d/
+#      - ./mysql/conf:/etc/my.cnf.d
+#      - ./mysql/data:/var/lib/mysql
+#      - ./mysql/log:/var/log/mysql
+
+# docker network create app
+networks:
+  default:
+    external:
+      name: "app"

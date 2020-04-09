@@ -1,0 +1,55 @@
+##  https://pgtune.leopard.in.ua/#/
+# DB Version: 10
+# OS Type: linux
+# DB Type: oltp
+# Total Memory (RAM): 1 GB
+# CPUs num: 2
+# Connections num: 70
+# Data Storage: ssd
+
+listen_addresses = '*'
+#port = 5432
+max_connections = 70
+superuser_reserved_connections = 3
+
+dynamic_shared_memory_type = posix	# the default is the first option
+shared_buffers = 450MB		    # min 128kB
+work_mem = 16MB				    # min 64kB
+maintenance_work_mem = 64MB	    # min 1MB
+huge_pages = off
+effective_cache_size = 550MB
+effective_io_concurrency = 200
+
+checkpoint_timeout = '15 min'	# range 30s-1d
+checkpoint_completion_target = 0.9
+max_wal_size = 512MB
+min_wal_size = 64MB
+
+wal_compression = on
+wal_buffers = -1
+wal_writer_delay = 200ms
+wal_writer_flush_after = 1MB
+
+default_statistics_target = 100
+random_page_cost = 1.1
+
+max_worker_processes = 2             # 9.6+
+max_parallel_workers_per_gather = 1  # 9.6+
+max_parallel_workers = 2             # 10+
+#max_parallel_maintenance_workers = 1 # 11+
+#parallel_leader_participation = on   # 11+
+
+lc_messages = 'C.UTF-8'		# locale for system error message
+lc_monetary = 'C'			# locale for monetary formatting
+lc_numeric = 'C'			# locale for number formatting
+lc_time = 'C'				# locale for time formatting
+log_timezone = 'UTC'
+timezone = 'UTC'
+
+# Monitoring
+shared_preload_libraries = 'pg_stat_statements'
+pg_stat_statements.track = all
+#### Create extension in every DB
+## CREATE EXTENSION pg_stat_statements;
+## SELECT * FROM pg_stat_statements;
+## -- время отклика sum(total_time) / sum(calls)
