@@ -3,8 +3,7 @@ global:
   scrape_interval:     10s # Set the scrape interval to every 10 seconds. Default is every 1 minute.
   evaluation_interval: 10s # Evaluate rules every 10 seconds. The default is every 1 minute.
 
-# A scrape configuration scraping a Node Exporter and the Prometheus server
-# itself.
+# A scrape configuration
 scrape_configs:
   # Scrape Prometheus itself (Dashboard #3662)
   - job_name: 'prometheus'
@@ -13,41 +12,35 @@ scrape_configs:
       - targets:
           - 'localhost:9090'
 
-          # Windows host-metrics, by
-          - '192.168.110.19:9182'
-
-  # Scrape the Node Exporter (Dashboard #1860)
-#  - job_name: 'node'
-#    scrape_interval: 10s
-#    static_configs:
-#      - targets:
-#          #- 'node_exporter:9100'
-#          #- '144.76.172.181:9100'   # sb40-master
-#          #- '144.76.157.174:9100'   # sb40-worker
-#          #- '144.76.199.142:9100'   # sb39-worker
-#          #- '149.126.98.236:30301'  # enersys master-node
-#          - '192.168.110.15:9100'   # des-pc (au_dev)
-#          - '192.168.110.23:9100'   # 23-beta (au_beta)
-#          - '192.168.110.24:9100'   # devops-rasla
-#          #- '194.67.221.180:39100'  # ihor-180
-
-  - job_name: 'node-exporter'
+  # Scrape the Node Exporter (nix) - https://github.com/prometheus/node_exporter
+  # Grafana Dashboards: 11074, 1860
+  - job_name: 'node'
     scrape_interval: 10s
     static_configs:
       - targets:
-          - '172.17.0.1:9100'  ## Docker Host-OS
-          #- '192.168.110.23:9100'   # 23-beta (au_beta)
+          - 'node_exporter:9100'
+          #- '172.17.0.1:9100'  ## Docker Host-OS
+          #- '144.76.172.181:9100'   # sb40-master
+          #- '144.76.157.174:9100'   # sb40-worker
+          #- '192.168.110.15:9100'   # des-pc (au_dev)
           #- '192.168.110.24:9100'   # devops-rasla
 
-  # Scrape the cAdvisor (Dashboard #8321)
+  # Scrape the WMI Exporter - https://github.com/martinlindhe/wmi_exporter
+  # Grafana Dashboards: 2129
+  - job_name: 'node-windows'
+    scrape_interval: 10s
+    static_configs:
+      - targets:
+          # Windows host-metrics, by
+          - '192.168.110.19:9182'   # stas-pc
+
+  # Scrape the cAdvisor
+  # Grafana Dashboards: 8321
   - job_name: docker
     scrape_interval: 10s
     static_configs:
       - targets:
-          #- 'localhost:9121'
           - 'cadvisor:8080'
-          #- ''
-          #- '144.76.172.181:8080'  # sb40-master
           #- '144.76.157.174:8080'   # sb40-worker
 
   # Scrape the Blackbox Exporter (Dashboard #7587)

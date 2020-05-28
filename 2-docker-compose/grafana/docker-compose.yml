@@ -3,7 +3,7 @@ version: '2.4'
 services:
 
   prometheus:
-    image: prom/prometheus  # v2.13.1
+    image: prom/prometheus  # v2.18.1
     container_name: prometheus
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
@@ -20,7 +20,7 @@ services:
       - ./prometheus_data:/prometheus
 
   grafana:
-    image: grafana/grafana  # 6.4.4
+    image: grafana/grafana  # 7.0.1 / 6.7.3  -  https://hub.docker.com/r/grafana/grafana/tags
     container_name: grafana
     depends_on:
       - prometheus
@@ -49,24 +49,24 @@ services:
       - /sys:/sys:ro
       - /var/lib/docker/:/var/lib/docker:ro
 
-## DO NOT USE Node_exporter  in  Docker!  Prefer to install it on Host-OS !!!
-#  node_exporter:
-#    image: prom/node-exporter  # v0.18.1
-#    container_name: node-exporter
-#    command:
-#      - '--path.procfs=/host/proc'
-#      - '--path.sysfs=/host/sys'
-#      - '--path.rootfs=/rootfs'
-#      - '--collector.filesystem.ignored-mount-points'
-#      - '^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)'
-#    hostname: "${NE_HOSTNAME}"
-#    #ports:
-#    #  - "${NE_PORT}:9100"
-#    restart: always
-#    volumes:
-#      - /proc:/host/proc:ro
-#      - /sys:/host/sys:ro
-#      - /:/rootfs:ro
+##  Prefer to install Node_exporter on Host-OS !!!
+  node_exporter:
+    image: prom/node-exporter:v1.0.0  # v1.0.0 / v0.18.1
+    container_name: node_exporter
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--path.rootfs=/rootfs'
+      - '--collector.filesystem.ignored-mount-points'
+      - '^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)'
+    hostname: "${NE_HOSTNAME}"
+    #ports:
+    #  - "${NE_PORT}:9100"
+    restart: always
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
 
 ### Alert Manager
 #  alertmanager:
