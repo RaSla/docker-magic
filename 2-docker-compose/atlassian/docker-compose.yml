@@ -4,7 +4,7 @@ version: '2.4'
 services:
 
   atl-jira:
-    image: atlassian/jira-software:8.8  # 8.5 Enterprise Release
+    image: atlassian/jira-software:8.10  # 8.5 Enterprise Release
     container_name: atl-jira
     depends_on:
       - atl-psql
@@ -23,7 +23,7 @@ services:
       #- ./mysql-connector-java-5.1.48.jar:/opt/atlassian/jira/lib/mysql-connector-java-5.1.48.jar
 
   atl-confluence:
-    image: atlassian/confluence-server:7.3  # 6.13, 7.4 Enterprise Release
+    image: atlassian/confluence-server:7.4  # 6.13, 7.4 Enterprise Release
     container_name: atl-confluence
     depends_on:
       - atl-psql
@@ -49,7 +49,7 @@ services:
 #    restart: always
 
   atl-psql:
-    image: postgres:10-alpine
+    image: postgres:11-alpine
     container_name: atl-psql
     environment:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}

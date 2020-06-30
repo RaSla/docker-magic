@@ -145,6 +145,20 @@ docker-compose up -d nginx
 
 ## 6. Setup Jira
 
+### 6.1 Useful plugins
+
+#### CRM for Jira - Customers & Sales
+**Marketplace URL**: https://marketplace.atlassian.com/apps/1211588/crm-for-jira-customers-sales  
+**Get TRY-License URL**: https://my.atlassian.com/addon/try/ru.teamlead.jira.plugins.teamlead-crm-plugin-for-jira
+
+#### Tempo Timesheets: Time Tracking & Report
+**Marketplace URL**: https://marketplace.atlassian.com/apps/6572/tempo-timesheets-time-tracking-report  
+**Get TRY-License URL**: https://my.atlassian.com/addon/try/is.origo.jira.tempo-plugin
+
+#### Zephyr for Jira - Test Management
+**Marketplace URL**: https://marketplace.atlassian.com/apps/1014681/zephyr-for-jira-test-management   
+**Get TRY-License URL**: https://my.atlassian.com/addon/try/com.thed.zephyr.je
+
 ## 7. Setup Confluence
 
 # Backup DB
