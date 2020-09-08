@@ -1,39 +1,81 @@
-## PostgreSQL 11+ (2 CPU cores, 1 Gb RAM)
-listen_addresses = '*'
-#port = 5432				# (change requires restart)
-max_connections = 90			# (change requires restart)
-superuser_reserved_connections = 3	# (change requires restart)
-shared_buffers = 450MB			# min 128kB
-effective_cache_size = 550MB
-work_mem = 10MB				# min 64kB
-maintenance_work_mem = 100MB		# min 1MB
-dynamic_shared_memory_type = posix	# the default is the first option
-huge_pages = off
-# - Checkpoints -
+##  http://pgconfigurator.cybertec.at/
+# DB Version: 11
+# OS Type: linux
+# DB Type: oltp
+# DB Size: 10 Gb
+# R/W Ratio: 80/20
+# Total Memory (RAM): 2 GB
+# CPUs num: 2
+# Connections num: 80
+# Data Storage: ssd
 
-#checkpoint_timeout = 5min		# range 30s-1d
+# Connectivity  # (change requires restart)
+listen_addresses = '*'
+port = 5432
+max_connections = 70
+superuser_reserved_connections = 3
+
+# Memory Settings
+dynamic_shared_memory_type = posix	# the default is the first option
+shared_buffers = 512MB			# min 128kB
+work_mem = 32MB					# min 64kB
+maintenance_work_mem = 320MB	# min 1MB
+huge_pages = off
+effective_cache_size = 1GB
+effective_io_concurrency = 100  # concurrent IO only really activated if OS supports posix_fadvise function
+
+# Checkpointing:
+checkpoint_timeout  = '15 min'  # range 30s-1d
+checkpoint_completion_target = 0.9
 max_wal_size = 512MB
 min_wal_size = 64MB
 
+# WAL archiving
+archive_mode = on # having it on enables activating P.I.T.R. at a later time without restart
+archive_command = '/bin/true'  # not doing anything yet with WAL-s
+
+# WAL writing
+wal_compression = on
+wal_buffers = -1    # auto-tuned by Postgres till maximum of segment size (16MB by default)
+
+# Background writer
+bgwriter_delay = 200ms
+bgwriter_lru_maxpages = 100
+bgwriter_lru_multiplier = 2.0
+bgwriter_flush_after = 0
+
+# Parallel queries:
+max_worker_processes = 2             # 9.6+
+max_parallel_workers_per_gather = 1  # 9.6+
+max_parallel_workers = 2             # 10+
+max_parallel_maintenance_workers = 1 # 11+
+parallel_leader_participation = on   # 11+
+
+# Advanced features (PG 11)
+enable_partitionwise_join = on
+enable_partitionwise_aggregate = on
+jit = on
+jit_above_cost = 100000
+jit_optimize_above_cost = 500000
+jit_inline_above_cost = 500000
+
+# Local-settings
 log_timezone = 'UTC'
-datestyle = 'iso, mdy'
+#datestyle = 'iso, mdy'
 #intervalstyle = 'postgres'
 timezone = 'UTC'
-lc_messages = 'en_US.utf8'			# locale for system error message
-					# strings
-lc_monetary = 'en_US.utf8'			# locale for monetary formatting
-lc_numeric = 'en_US.utf8'			# locale for number formatting
-lc_time = 'en_US.utf8'				# locale for time formatting
+lc_messages = 'en_US.utf8'	# locale for system error message
+#lc_monetary = 'en_US.utf8'	# locale for monetary formatting
+lc_numeric = 'C'			# locale for number formatting
+lc_time = 'C'				# locale for time formatting
 
 # default configuration for text search
 default_text_search_config = 'pg_catalog.english'
 
-max_worker_processes = 2
-max_parallel_workers_per_gather = 1
-max_parallel_workers = 2
-
 # Monitoring
-shared_preload_libraries = 'pg_stat_statements'
+shared_preload_libraries = 'pg_stat_statements'    # per statement resource usage stats
+track_io_timing=on        # measure exact block IO times
+track_functions=pl        # track execution times of pl-language procedures if any
 pg_stat_statements.track = all
 #### Create extension in every DB
 ## CREATE EXTENSION pg_stat_statements;
