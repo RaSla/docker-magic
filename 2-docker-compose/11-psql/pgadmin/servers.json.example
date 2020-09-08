@@ -2,7 +2,7 @@
   "Servers": {
     "1": {
       "Name": "psql-dc",
-      "Group": "Server Group 1",
+      "Group": "Docker-Compose",
       "Host": "psql",
       "Port": 5432,
       "Username": "postgres",
