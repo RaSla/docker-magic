@@ -4,6 +4,8 @@ services:
 
   ## Run containers as App-User (no problems with Read/Write files/dirs)
   pgadmin:
+    volumes:
+      - ./pgadmin/log:/var/log/pgadmin
     user: "${USER_UID}:${USER_GID}"
 
   psql:
