@@ -12,7 +12,7 @@
 # Connectivity  # (change requires restart)
 listen_addresses = '*'
 port = 5432
-max_connections = 70
+max_connections = 80
 superuser_reserved_connections = 3
 
 # Memory Settings
@@ -24,7 +24,7 @@ huge_pages = off
 effective_cache_size = 1GB
 effective_io_concurrency = 100  # concurrent IO only really activated if OS supports posix_fadvise function
 
-# Checkpointing:
+# Checkpointing
 checkpoint_timeout  = '15 min'  # range 30s-1d
 checkpoint_completion_target = 0.9
 max_wal_size = 512MB
