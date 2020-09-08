@@ -2,18 +2,23 @@
 version: '2.4' # Docker-CE 17.12 = 2.4 MAX; 'docker.io=17.12.1-0ubuntu' [u18.04] support 2.4 MAX
 services:
 
-  adminer:
-    container_name: adminer
-    image: adminer:4
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4:4.25
+    environment:
+      - "PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}"
+      - "PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}"
+      - "PGADMIN_LISTEN_PORT=${PGADMIN_LISTEN_PORT}"
     ports:
-      - "${ADMINER_PORT}:8080"
+      - "${PGADMIN_USER_PORT}:${PGADMIN_LISTEN_PORT}"
     #restart: always
+    volumes:
+      - ./pgadmin/data:/var/lib/pgadmin
+      - ./pgadmin/servers.json:/pgadmin4/servers.json
 
   psql:
     container_name: psql
-    image: postgres:12-alpine
-    volumes:
-      - ./psql/data:/var/lib/postgresql/data
+    image: postgres:11-alpine
     environment:
 # Super-User: by default POSTGRES_USER="postgres"
 #      - "POSTGRES_USER=${POSTGRES_USER}"
@@ -21,6 +26,8 @@ services:
     ports:
       - "${POSTGRES_PORT}:5432"
     #restart: always
+    volumes:
+      - ./psql/data:/var/lib/postgresql/data
 
 # docker network create app
 networks:

@@ -3,6 +3,9 @@
 docker-compose.override.yml
 
 ## Data
+pgadmin/data/*
+pgadmin/log/*
+pgadmin/servers.json
 psql/data/*
 
 ## SQL dumps
