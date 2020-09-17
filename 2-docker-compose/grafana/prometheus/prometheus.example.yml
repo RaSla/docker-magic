@@ -20,9 +20,6 @@ scrape_configs:
       - targets:
           - 'node_exporter:9100'
           #- '172.17.0.1:9100'  ## Docker Host-OS
-          #- '144.76.172.181:9100'   # sb40-master
-          #- '144.76.157.174:9100'   # sb40-worker
-          #- '192.168.110.15:9100'   # des-pc (au_dev)
           #- '192.168.110.24:9100'   # devops-rasla
 
   # Scrape the WMI Exporter - https://github.com/martinlindhe/wmi_exporter
@@ -34,55 +31,34 @@ scrape_configs:
           # Windows host-metrics, by
           - '192.168.110.19:9182'   # stas-pc
 
-  # Scrape the cAdvisor
+  # Scrape the cAdvisor - https://github.com/google/cadvisor
   # Grafana Dashboards: 8321
   - job_name: docker
     scrape_interval: 10s
     static_configs:
       - targets:
           - 'cadvisor:8080'
-          #- '144.76.157.174:8080'   # sb40-worker
 
-  # Scrape the Blackbox Exporter (Dashboard #7587)
-#  - job_name: 'blackbox'
-#    scrape_interval: 10s
-#    metrics_path: /probe
-#    file_sd_configs:
-#      - files:
-#          - '/etc/prometheus/blackbox/*.yml'
-#    relabel_configs:
-#      - source_labels: [__address__]
-#        target_label: __param_target
-#      - source_labels: [module]
-#        target_label: __param_module
-#      - source_labels: [__param_target]
-#        target_label: instance
-#      - target_label: __address__
-#        replacement: blackbox-exporter:9115
-
-  # Scrape the RabbitMQ Exporter (Dashboard #4279)
+  # Scrape the RabbitMQ Exporter - https://github.com/kbudde/rabbitmq_exporter
+  # Grafana Dashboards: 4279
 #  - job_name: rabbitmq_exporter
-#    scrape_interval: 10s
+#    scrape_interval: 20s
 #    static_configs:
 #      - targets:
-#          - '192.168.110.15:32122'  # des-pc
-#          - '192.168.110.23:32122'  # 23-beta
-#          #- '144.76.172.181:32122'  # sb40-master
+#          - '192.168.110.15:9419'  # des-pc
 
-  # Scrape the Redis Exporter (Dashboard #763)
+  # Scrape the Redis Exporter - https://github.com/oliver006/redis_exporter
+  # Grafana Dashboards: 763
 #  - job_name: redis_exporter
 #    scrape_interval: 10s
 #    static_configs:
 #      - targets:
 #          #- 'localhost:9121'
-#          - '192.168.110.15:32121'  # des-pc
-#          - '192.168.110.23:32121'  # 23-beta
-#          #- '144.76.172.181:32121'  # sb40-master
 
-  # Scrape the Postgres Exporter (Dashboard #6742)
+  # Scrape the Postgres Exporter - https://github.com/wrouesnel/postgres_exporter
+  # Grafana Dashboards: 6742
 #  - job_name: postgres_exporter
 #    scrape_interval: 10s
 #    static_configs:
 #      - targets:
-#          #- 'localhost:9121'
-#          - '144.76.172.181:32123'  # sb40-master
+#          #- 'localhost:9187'

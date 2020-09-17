@@ -3,7 +3,7 @@ version: '2.4'
 services:
 
   prometheus:
-    image: prom/prometheus  # v2.18.1
+    image: prom/prometheus  # v2.21.0
     container_name: prometheus
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
@@ -20,7 +20,7 @@ services:
       - ./prometheus_data:/prometheus
 
   grafana:
-    image: grafana/grafana  # 7.0.1 / 6.7.3  -  https://hub.docker.com/r/grafana/grafana/tags
+    image: grafana/grafana  # 7.1.15 / 6.7.3  -  https://hub.docker.com/r/grafana/grafana/tags
     container_name: grafana
     depends_on:
       - prometheus
@@ -28,7 +28,6 @@ services:
       # https://grafana.com/docs/installation/docker/
       - "GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}"
       - "GF_SECURITY_ALLOW_EMBEDDING=true"
-      - "GF_SECURITY_COOKIE_SAMESITE=none"
       - "GF_SERVER_ROOT_URL=${GRAFANA_ROOT_URL}"
     ports:
       - "${GRAFANA_PORT}:3000"
@@ -37,21 +36,22 @@ services:
       - ./grafana_data:/var/lib/grafana
 
 ### EXPORTERS
+  # https://github.com/google/cadvisor
   cadvisor:
-    image: google/cadvisor:v0.33.0
+    image: gcr.io/google_containers/cadvisor:v0.36.0  # v0.36.0
     container_name: cadvisor
-    #ports:
-    #  - 8081:8080
+    privileged: true
     restart: always
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:rw
       - /sys:/sys:ro
       - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
 
-##  Prefer to install Node_exporter on Host-OS !!!
+  # https://github.com/prometheus/node_exporter
   node_exporter:
-    image: prom/node-exporter:v1.0.0  # v1.0.0 / v0.18.1
+    image: prom/node-exporter:v1.0.1  # v1.0.1 / v0.18.1
     container_name: node_exporter
     command:
       - '--path.procfs=/host/proc'
