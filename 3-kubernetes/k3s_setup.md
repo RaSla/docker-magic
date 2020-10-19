@@ -119,6 +119,8 @@ Run few command on k3s-master (by **Root**):
 ```console
 ## Install or Upgrade K3S (WITHOUT Ingress-Traefik, for manual install Ingress-Nginx)
 $ curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION="v1.18.8+k3s1" sh -s - server --no-deploy traefik
+## (or) Install by-channel (stable, latest)
+$ curl -sfL https://get.k3s.io | INSTALL_K3S_CHANNEL="latest" sh -s - server --no-deploy traefik
 ## Check
 $ kubectl get nodes
 NAME      STATUS   ROLES    AGE   VERSION
@@ -160,7 +162,7 @@ rm k9s_${K9S_VERSION}_Linux_x86_64.tar.gz
 
 ### 5. HELM v3
 ```bash
-HELM_VERSION=v3.3.1
+HELM_VERSION=v3.3.4
 wget https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz
 tar -zxvf helm-${HELM_VERSION}-linux-amd64.tar.gz linux-amd64/helm
 sudo mv linux-amd64/helm /usr/local/bin/helm
@@ -181,4 +183,31 @@ $ kubectl create namespace ingress-nginx
 
 ## (option A) - Install by HELM. https://github.com/kubernetes/ingress-nginx/
 $ helm install all stable/nginx-ingress -n ingress-nginx
+```
+ALTERNATIVE:
+```console
+$ kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.35.0/deploy/static/provider/baremetal/deploy.yaml
+```
+
+## Uninstall
+To uninstall K3s from a server node, run:
+```console
+$ /usr/local/bin/k3s-uninstall.sh
+```
+To uninstall K3s from an agent node, run:
+```console
+$ /usr/local/bin/k3s-agent-uninstall.sh
+```
+
+To purge all files, run:
+```console
+## Delete all files
+$ rm -rf /var/lib/rancher/
+$ rm -rf /var/log/containers/
+$ rm -rf /var/log/pods
+$ journalctl --vacuum-time=2d
+
+## Delete all configs
+$ rm -rf /etc/rancher
+$ rm -rf ~/.kube
 ```
