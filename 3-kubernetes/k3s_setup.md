@@ -154,10 +154,10 @@ ln -sf /usr/share/zoneinfo/UTC /etc/localtime
 ```bash
 ## Install K9S - console tools for kubernetes
 K9S_VERSION=0.13.8
-wget https://github.com/derailed/k9s/releases/download/v${K9S_VERSION}/k9s_${K9S_VERSION}_Linux_x86_64.tar.gz
-tar -xf k9s_${K9S_VERSION}_Linux_x86_64.tar.gz k9s
+wget https://github.com/derailed/k9s/releases/download/v${K9S_VERSION}/k9s_Linux_x86_64.tar.gz
+tar -xf k9s_Linux_x86_64.tar.gz k9s
 sudo mv k9s /usr/local/bin/
-rm k9s_${K9S_VERSION}_Linux_x86_64.tar.gz
+rm k9s_Linux_x86_64.tar.gz
 ```
 
 ### 5. HELM v3
