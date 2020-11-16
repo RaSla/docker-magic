@@ -162,32 +162,46 @@ rm k9s_${K9S_VERSION}_Linux_x86_64.tar.gz
 ```
 
 ### 5. HELM v3
-```bash
-HELM_VERSION=v3.3.4
-wget https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz
-tar -zxvf helm-${HELM_VERSION}-linux-amd64.tar.gz linux-amd64/helm
-sudo mv linux-amd64/helm /usr/local/bin/helm
-rm -rf linux-amd64
-rm helm-${HELM_VERSION}-linux-amd64.tar.gz
+```console
+$ HELM_VERSION=v3.4.1
+$ wget https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz
+$ tar -zxvf helm-${HELM_VERSION}-linux-amd64.tar.gz linux-amd64/helm
+$ sudo mv linux-amd64/helm /usr/local/bin/helm
+$ rm -rf linux-amd64
+$ rm helm-${HELM_VERSION}-linux-amd64.tar.gz
 
-## BASH completion
-sudo helm completion bash > /etc/bash_completion.d/helm
+## BASH completion (by root)
+# helm completion bash > /etc/bash_completion.d/helm
 
 ## Stable-repo
-helm repo add stable https://kubernetes-charts.storage.googleapis.com/
-helm repo update
+$ helm repo add stable https://charts.helm.sh/stable --force-update
+$ helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+$ helm repo update
+Hang tight while we grab the latest from your chart repositories...
+...Successfully got an update from the "ingress-nginx" chart repository
+...Successfully got an update from the "stable" chart repository
+Update Complete. ⎈Happy Helming!⎈
 ```
+See more - [helm.sh/docs/intro/quickstart/](https://helm.sh/docs/intro/quickstart/)
 
 ### 6. Ingress-Nginx 
 ```console
 $ kubectl create namespace ingress-nginx
 
 ## (option A) - Install by HELM. https://github.com/kubernetes/ingress-nginx/
-$ helm install all stable/nginx-ingress -n ingress-nginx
+$ helm search repo nginx
+NAME                            CHART VERSION   APP VERSION     DESCRIPTION                                       
+ingress-nginx/ingress-nginx     3.10.1          0.41.2          Ingress controller for Kubernetes using NGINX a...
+stable/nginx-ingress            1.41.3          v0.34.1         DEPRECATED! An nginx Ingress controller that us...
+stable/nginx-ldapauth-proxy     0.1.6           1.13.5          DEPRECATED - nginx proxy with ldapauth            
+stable/nginx-lego               0.3.1                           Chart for nginx-ingress-controller and kube-lego  
+stable/gcloud-endpoints         0.1.2           1               DEPRECATED Develop, deploy, protect and monitor...
+
+$ helm install ngx ingress-nginx/ingress-nginx -n ingress-nginx
 ```
 ALTERNATIVE:
 ```console
-$ kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.35.0/deploy/static/provider/baremetal/deploy.yaml
+$ kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.41.2/deploy/static/provider/baremetal/deploy.yaml
 ```
 
 ## Uninstall
