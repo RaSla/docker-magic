@@ -118,35 +118,36 @@ $ curl -sfL https://raw.githubusercontent.com/RaSla/docker-magic/develop/3-kuber
 Run few command on k3s-master (by **Root**):
 ```console
 ## Install or Upgrade K3S (WITHOUT Ingress-Traefik, for manual install Ingress-Nginx)
-$ curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION="v1.18.8+k3s1" sh -s - server --no-deploy traefik
-## (or) Install by-channel (stable, latest)
-$ curl -sfL https://get.k3s.io | INSTALL_K3S_CHANNEL="latest" sh -s - server --no-deploy traefik
+## -- by-version (v1.18.12+k3s1 / v1.19.4+k3s1)
+# curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION="v1.18.12+k3s1" sh -s - server --no-deploy traefik
+## -- by-channel (stable / latest)
+# curl -sfL https://get.k3s.io | INSTALL_K3S_CHANNEL="latest" sh -s - server --no-deploy traefik
 ## Check
 $ kubectl get nodes
 NAME      STATUS   ROLES    AGE   VERSION
-cert-au   Ready    master   27m   v1.18.8+k3s1
+cert-au   Ready    master   27m   v1.18.12+k3s1
 
 ## Make bash-completeon
-$ kubectl completion bash > /etc/bash_completion.d/kubectl
-$ crictl completion bash > /etc/bash_completion.d/crictl
+# kubectl completion bash > /etc/bash_completion.d/kubectl
+# crictl completion bash > /etc/bash_completion.d/crictl
 
 ## Copy kube-config
-$ mkdir -p ~/.kube
-$ cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
+# mkdir -p ~/.kube
+# cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
 
 ## Modify default names:
 CLUSTER_NAME="alpha"
-sed -i "s|default|${CLUSTER_NAME}|g" ~/.kube/config
+# sed -i "s|default|${CLUSTER_NAME}|g" ~/.kube/config
 
 ## (optional, for external usage) Modify Ipv4 in .kube/config
-ip addr | head | grep inet
+# ip addr | head | grep inet
     inet 127.0.0.1/8 scope host lo
     inet6 ::1/128 scope host 
     inet 192.168.110.20/24 brd 192.168.110.255 scope global dynamic noprefixroute enp1s0
-sed -i "s|127.0.0.1|192.168.110.20|g" ~/.kube/config
+# sed -i "s|127.0.0.1|192.168.110.20|g" ~/.kube/config
 
 ## (optional) Установка часов в UTC
-ln -sf /usr/share/zoneinfo/UTC /etc/localtime
+# ln -sf /usr/share/zoneinfo/UTC /etc/localtime
 ```
 
 ### 4. K9S (optional)

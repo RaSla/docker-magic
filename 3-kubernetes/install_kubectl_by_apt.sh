@@ -1,6 +1,6 @@
 #!/bin/bash
 
-K8S_VERSION="1.19.3-00"
+K8S_VERSION="1.19.4-00"
 
 set -e
 
