@@ -151,30 +151,30 @@ ln -sf /usr/share/zoneinfo/UTC /etc/localtime
 
 ### 4. K9S (optional)
 [K9s](https://github.com/derailed/k9s) - Kubernetes CLI To Manage Your Clusters In Style!
-```bash
+```console
 ## Install K9S - console tools for kubernetes
-K9S_VERSION=0.23.10
-wget https://github.com/derailed/k9s/releases/download/v${K9S_VERSION}/k9s_Linux_x86_64.tar.gz
-tar -xf k9s_Linux_x86_64.tar.gz k9s
-sudo mv k9s /usr/local/bin/
-rm k9s_Linux_x86_64.tar.gz
+$ K9S_VERSION=0.23.10
+$ wget https://github.com/derailed/k9s/releases/download/v${K9S_VERSION}/k9s_Linux_x86_64.tar.gz
+$ tar -xf k9s_Linux_x86_64.tar.gz k9s
+$ sudo mv k9s /usr/local/bin/
+$ rm k9s_Linux_x86_64.tar.gz
 ```
 
 ### 5. HELM v3
-```bash
-HELM_VERSION=v3.3.4
-wget https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz
-tar -zxvf helm-${HELM_VERSION}-linux-amd64.tar.gz linux-amd64/helm
-sudo mv linux-amd64/helm /usr/local/bin/helm
-rm -rf linux-amd64
-rm helm-${HELM_VERSION}-linux-amd64.tar.gz
+```console
+$ HELM_VERSION=v3.4.1
+$ wget https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz
+$ tar -zxvf helm-${HELM_VERSION}-linux-amd64.tar.gz linux-amd64/helm
+$ sudo mv linux-amd64/helm /usr/local/bin/helm
+$ rm -rf linux-amd64
+$ rm helm-${HELM_VERSION}-linux-amd64.tar.gz
 
 ## BASH completion
-sudo helm completion bash > /etc/bash_completion.d/helm
+$ sudo helm completion bash > /etc/bash_completion.d/helm
 
 ## Stable-repo
-helm repo add stable https://kubernetes-charts.storage.googleapis.com/
-helm repo update
+$ helm repo add stable https://kubernetes-charts.storage.googleapis.com/
+$ helm repo update
 ```
 
 ### 6. Ingress-Nginx 
