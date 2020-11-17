@@ -1,19 +1,19 @@
 # Docker Magic
 This repo contains Docker's usage examples.  
 
-I divided **Docker-Magic** into 3 levels:
-1. **Docker** - use of **single** docker container, including topics:
+I divide **Docker-Magic** into 3 levels:
+1. **Docker** - using the **single** docker container, including topics:
     * Get docker-image;
     * Make docker-image (with Dockerfile);
     * Run docker-container;
     * Run docker-container with custom params (env-vars, port-mapping, disk-volumes, as specific user);
-1. **Docker-compose** - use of **compositions** of Docker-containers (on a single server), including topics:
+1. **Docker-compose** - using the **application** from several Docker-containers (on a single server), including topics:
     * Combine few docker-images into the Application
     * Configure Application (for multi envs/users)
     * Mapping files/dirs between docker-containers and Host-OS
     * Mapping TCP/UDP ports between docker-containers and Host-OS
-    * Can limit resources to docker-containers
-1. **Kubernetes** - use of **orchestrator** (in multi-server cluster)
+    * Limits of the resources for docker-containers
+1. **Kubernetes** - using the **orchestrator** for full control (many applications, multi-server cluster)
 
 ## Requirements
 * Install **[Docker-CE](https://docs.docker.com/install/)**  
@@ -27,7 +27,7 @@ or deb-package **docker.io** (Ubuntu 16.04+, Debian 10+): `sudo apt install dock
 * To install **[Docker-Compose](https://docs.docker.com/compose/install/)** make a few steps (on Linux):
     ```bash
     sudo apt install python3-pip;
-    sudo pip3 install docker-compose==1.24.0
+    sudo pip3 install docker-compose==1.27.4
     ```
 
 ## YAML-linter
@@ -35,7 +35,7 @@ or deb-package **docker.io** (Ubuntu 16.04+, Debian 10+): `sudo apt install dock
 Before commit changes - you MUST check code (& fix errors, if possible) by linter:
 ```bash
 ## (once) Install Linters
-sudo pip3 install yamllint==1.16.0
+sudo pip3 install yamllint==1.25.0
 
 ## PRE-commit check
 yamllint .

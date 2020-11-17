@@ -115,6 +115,7 @@ $ service openntpd restart
 $ curl -sfL https://raw.githubusercontent.com/RaSla/docker-magic/develop/3-kubernetes/install_kubectl_by_apt.sh | sh -s
 ```
 
+#### 3.1 Install K3S on Master-node
 Run few command on k3s-master (by **Root**):
 ```console
 ## Install or Upgrade K3S (WITHOUT Ingress-Traefik, for manual install Ingress-Nginx)
@@ -122,10 +123,6 @@ Run few command on k3s-master (by **Root**):
 # curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION="v1.18.12+k3s1" sh -s - server --no-deploy traefik
 ## -- by-channel (stable / latest)
 # curl -sfL https://get.k3s.io | INSTALL_K3S_CHANNEL="latest" sh -s - server --no-deploy traefik
-## Check
-$ kubectl get nodes
-NAME      STATUS   ROLES    AGE   VERSION
-cert-au   Ready    master   27m   v1.18.12+k3s1
 
 ## Make bash-completeon
 # kubectl completion bash > /etc/bash_completion.d/kubectl
@@ -135,8 +132,13 @@ cert-au   Ready    master   27m   v1.18.12+k3s1
 # mkdir -p ~/.kube
 # cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
 
+## Check config by kubectl 
+# kubectl get nodes
+NAME      STATUS   ROLES    AGE   VERSION
+au-master Ready    master   7m    v1.18.12+k3s1
+
 ## Modify default names:
-CLUSTER_NAME="alpha"
+# CLUSTER_NAME="alpha"
 # sed -i "s|default|${CLUSTER_NAME}|g" ~/.kube/config
 
 ## (optional, for external usage) Modify Ipv4 in .kube/config
@@ -148,6 +150,29 @@ CLUSTER_NAME="alpha"
 
 ## (optional) Установка часов в UTC
 # ln -sf /usr/share/zoneinfo/UTC /etc/localtime
+```
+
+#### 3.2 (optional) Install K3S on Worker-nodes
+```console
+## Get TOKEN and IP on Master
+# cat /var/lib/rancher/k3s/server/node-token
+K106486c8a458ff9b37776619efbb703a9808fbb1f3c370304bb878ab07a88efcd3::server:2f3c265fa034289c2b4aa30c6ed1f3e1
+# ip addr | head | grep inet
+    inet 127.0.0.1/8 scope host lo
+    inet6 ::1/128 scope host 
+    inet 192.168.110.20/24 brd 192.168.110.255 scope global dynamic noprefixroute enp1s0
+
+## Add Worker-Node
+# curl -sfL https://get.k3s.io | \
+ K3S_TOKEN="K106486c8a458ff9b37776619efbb703a9808fbb1f3c370304bb878ab07a88efcd3::server:2f3c265fa034289c2b4aa30c6ed1f3e1" \
+ K3S_URL=https://192.168.110.20:6443 \
+  sh -
+
+## Check on Master-Node
+# kubectl get nodes
+NAME      STATUS   ROLES    AGE   VERSION
+au-master Ready    master   9m    v1.18.12+k3s1
+worker-01 Ready    <none>   114s  v1.18.12+k3s1
 ```
 
 ### 4. K9S (optional)
