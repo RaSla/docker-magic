@@ -118,35 +118,36 @@ $ curl -sfL https://raw.githubusercontent.com/RaSla/docker-magic/develop/3-kuber
 Run few command on k3s-master (by **Root**):
 ```console
 ## Install or Upgrade K3S (WITHOUT Ingress-Traefik, for manual install Ingress-Nginx)
-$ curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION="v1.18.8+k3s1" sh -s - server --no-deploy traefik
-## (or) Install by-channel (stable, latest)
-$ curl -sfL https://get.k3s.io | INSTALL_K3S_CHANNEL="latest" sh -s - server --no-deploy traefik
+## -- by-version (v1.18.12+k3s1 / v1.19.4+k3s1)
+# curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION="v1.18.12+k3s1" sh -s - server --no-deploy traefik
+## -- by-channel (stable / latest)
+# curl -sfL https://get.k3s.io | INSTALL_K3S_CHANNEL="latest" sh -s - server --no-deploy traefik
 ## Check
 $ kubectl get nodes
 NAME      STATUS   ROLES    AGE   VERSION
-cert-au   Ready    master   27m   v1.18.8+k3s1
+cert-au   Ready    master   27m   v1.18.12+k3s1
 
 ## Make bash-completeon
-$ kubectl completion bash > /etc/bash_completion.d/kubectl
-$ crictl completion bash > /etc/bash_completion.d/crictl
+# kubectl completion bash > /etc/bash_completion.d/kubectl
+# crictl completion bash > /etc/bash_completion.d/crictl
 
 ## Copy kube-config
-$ mkdir -p ~/.kube
-$ cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
+# mkdir -p ~/.kube
+# cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
 
 ## Modify default names:
 CLUSTER_NAME="alpha"
-sed -i "s|default|${CLUSTER_NAME}|g" ~/.kube/config
+# sed -i "s|default|${CLUSTER_NAME}|g" ~/.kube/config
 
 ## (optional, for external usage) Modify Ipv4 in .kube/config
-ip addr | head | grep inet
+# ip addr | head | grep inet
     inet 127.0.0.1/8 scope host lo
     inet6 ::1/128 scope host 
     inet 192.168.110.20/24 brd 192.168.110.255 scope global dynamic noprefixroute enp1s0
-sed -i "s|127.0.0.1|192.168.110.20|g" ~/.kube/config
+# sed -i "s|127.0.0.1|192.168.110.20|g" ~/.kube/config
 
 ## (optional) Установка часов в UTC
-ln -sf /usr/share/zoneinfo/UTC /etc/localtime
+# ln -sf /usr/share/zoneinfo/UTC /etc/localtime
 ```
 
 ### 4. K9S (optional)
@@ -169,24 +170,38 @@ $ sudo mv linux-amd64/helm /usr/local/bin/helm
 $ rm -rf linux-amd64
 $ rm helm-${HELM_VERSION}-linux-amd64.tar.gz
 
-## BASH completion
-$ sudo helm completion bash > /etc/bash_completion.d/helm
+## BASH completion (by root)
+# helm completion bash > /etc/bash_completion.d/helm
 
 ## Stable-repo
-$ helm repo add stable https://kubernetes-charts.storage.googleapis.com/
+$ helm repo add stable https://charts.helm.sh/stable --force-update
+$ helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 $ helm repo update
+Hang tight while we grab the latest from your chart repositories...
+...Successfully got an update from the "ingress-nginx" chart repository
+...Successfully got an update from the "stable" chart repository
+Update Complete. ⎈Happy Helming!⎈
 ```
+See more - [helm.sh/docs/intro/quickstart/](https://helm.sh/docs/intro/quickstart/)
 
 ### 6. Ingress-Nginx 
 ```console
 $ kubectl create namespace ingress-nginx
 
 ## (option A) - Install by HELM. https://github.com/kubernetes/ingress-nginx/
-$ helm install all stable/nginx-ingress -n ingress-nginx
+$ helm search repo nginx
+NAME                            CHART VERSION   APP VERSION     DESCRIPTION                                       
+ingress-nginx/ingress-nginx     3.10.1          0.41.2          Ingress controller for Kubernetes using NGINX a...
+stable/nginx-ingress            1.41.3          v0.34.1         DEPRECATED! An nginx Ingress controller that us...
+stable/nginx-ldapauth-proxy     0.1.6           1.13.5          DEPRECATED - nginx proxy with ldapauth            
+stable/nginx-lego               0.3.1                           Chart for nginx-ingress-controller and kube-lego  
+stable/gcloud-endpoints         0.1.2           1               DEPRECATED Develop, deploy, protect and monitor...
+
+$ helm install ngx ingress-nginx/ingress-nginx -n ingress-nginx
 ```
 ALTERNATIVE:
 ```console
-$ kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.35.0/deploy/static/provider/baremetal/deploy.yaml
+$ kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.41.2/deploy/static/provider/baremetal/deploy.yaml
 ```
 
 ## Uninstall
