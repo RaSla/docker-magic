@@ -153,7 +153,7 @@ ln -sf /usr/share/zoneinfo/UTC /etc/localtime
 [K9s](https://github.com/derailed/k9s) - Kubernetes CLI To Manage Your Clusters In Style!
 ```bash
 ## Install K9S - console tools for kubernetes
-K9S_VERSION=0.13.8
+K9S_VERSION=0.23.10
 wget https://github.com/derailed/k9s/releases/download/v${K9S_VERSION}/k9s_Linux_x86_64.tar.gz
 tar -xf k9s_Linux_x86_64.tar.gz k9s
 sudo mv k9s /usr/local/bin/
