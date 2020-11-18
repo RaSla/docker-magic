@@ -84,9 +84,8 @@ Setup OpenNTPd (or LinuxPTP)
 ## Install OpenNTPd
 $ apt install openntpd
 ```
-Configure OpenNTPd
-```console
-$ nano /etc/openntpd/ntpd.conf
+Configure OpenNTPd by `nano /etc/openntpd/ntpd.conf`
+```editorconfig
 # Addresses to listen on (ntpd does not listen by default)
 #listen on *
 #listen on 127.0.0.1
@@ -121,10 +120,11 @@ Run few command on k3s-master (by **Root**):
 ## Install or Upgrade K3S (WITHOUT Ingress-Traefik, for manual install Ingress-Nginx)
 ## -- by-version (v1.18.12+k3s1 / v1.19.4+k3s1)
 # curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION="v1.18.12+k3s1" sh -s - server --no-deploy traefik
-## -- by-channel (stable / latest)
-# curl -sfL https://get.k3s.io | INSTALL_K3S_CHANNEL="latest" sh -s - server --no-deploy traefik
+## -- by-channel (v1.18 / v1.19 / stable / latest)  \  Multi-Master
+# wget -O - https://get.k3s.io | INSTALL_K3S_CHANNEL="v1.19" sh -s - server --no-deploy traefik
+## For install Multi-Master cluster, you need to append param:  --cluster-init
 
-## Make bash-completeon
+## Make bash-completion
 # kubectl completion bash > /etc/bash_completion.d/kubectl
 # crictl completion bash > /etc/bash_completion.d/crictl
 
@@ -152,7 +152,32 @@ au-master Ready    master   7m    v1.18.12+k3s1
 # ln -sf /usr/share/zoneinfo/UTC /etc/localtime
 ```
 
-#### 3.2 (optional) Install K3S on Worker-nodes
+#### 3.2 (optional) Install K3S on other Master-nodes
+**WARNING!** For multi-master cluster, first Master-Node MUST BE installed with parameter **`--cluster-init`**
+```console
+## Get TOKEN and IP on Master
+# cat /var/lib/rancher/k3s/server/node-token
+K102cfb0e66a3932ddc6437440eb27b5f39d793fb9a5b42accb326b5abb70256b62::server:b6d49a0dd920ce4cc8c70e69ce4ac7d6
+# ip addr | head | grep inet
+    inet 127.0.0.1/8 scope host lo
+    inet6 ::1/128 scope host 
+    inet 192.168.110.21/24 brd 192.168.110.255 scope global dynamic noprefixroute enp1s0
+
+## Add Master-Node
+# curl -sfL https://get.k3s.io | \
+ INSTALL_K3S_CHANNEL="v1.19" \
+ K3S_TOKEN="K102cfb0e66a3932ddc6437440eb27b5f39d793fb9a5b42accb326b5abb70256b62::server:b6d49a0dd920ce4cc8c70e69ce4ac7d6" \
+  sh -s - server --server https://192.168.110.21:6443  --no-deploy traefik
+
+## Check Nodes
+# kubectl get nodes
+NAME             STATUS   ROLES         AGE   VERSION
+delta-au         Ready    etcd,master   24m   v1.19.3+k3s3
+i5-7600-worker   Ready    etcd,master   21m   v1.19.3+k3s3
+ramarus-devops   Ready    etcd,master   12m   v1.19.3+k3s3
+```
+
+#### 3.3 (optional) Install K3S on Worker nodes
 ```console
 ## Get TOKEN and IP on Master
 # cat /var/lib/rancher/k3s/server/node-token
@@ -228,6 +253,75 @@ ALTERNATIVE:
 ```console
 $ kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.41.2/deploy/static/provider/baremetal/deploy.yaml
 ```
+
+## 7. Automated upgrades
+Full manual is located here - [rancher.com/docs/k3s/latest/en/upgrades/automated/](https://rancher.com/docs/k3s/latest/en/upgrades/automated/)
+Install the system-upgrade-controller
+```console
+$ kubectl apply -f https://github.com/rancher/system-upgrade-controller/releases/download/v0.4.0/system-upgrade-controller.yaml
+```
+Configure plans - make **k3s_upgrade.yaml**
+```yaml
+# Server plan
+apiVersion: upgrade.cattle.io/v1
+kind: Plan
+metadata:
+  name: server-plan
+  namespace: system-upgrade
+spec:
+  concurrency: 1
+  cordon: true
+  nodeSelector:
+    matchExpressions:
+    - key: node-role.kubernetes.io/master
+      operator: In
+      values:
+      - "true"
+  serviceAccountName: system-upgrade
+  upgrade:
+    image: rancher/k3s-upgrade
+  # Upgrade type: version or channel
+  #version: v1.18.12+k3s1
+  channel: https://update.k3s.io/v1-release/channels/v1.18  # v1.18 / v1.19 / stable / latest
+
+---
+# Agent plan
+apiVersion: upgrade.cattle.io/v1
+kind: Plan
+metadata:
+  name: agent-plan
+  namespace: system-upgrade
+spec:
+  concurrency: 1
+  cordon: true
+  nodeSelector:
+    matchExpressions:
+    - key: node-role.kubernetes.io/master
+      operator: DoesNotExist
+  prepare:
+    args:
+    - prepare
+    - server-plan
+    image: rancher/k3s-upgrade:v1.18.12-k3s1
+  serviceAccountName: system-upgrade
+  upgrade:
+    image: rancher/k3s-upgrade
+  # Upgrade type: version or channel
+  #version: v1.18.12+k3s1
+  channel: https://update.k3s.io/v1-release/channels/v1.18  # v1.18 / v1.19 / stable / latest
+```
+Apply Plan for K3S-Cluster
+```console
+$ kubectl apply -f k3s_upgrade.yaml
+plan.upgrade.cattle.io/server-plan created
+plan.upgrade.cattle.io/agent-plan created
+
+## Check
+$ kubectl -n system-upgrade get plans -o yaml
+$ kubectl -n system-upgrade get jobs -o yaml
+
+```
+
 
 ## Uninstall
 To uninstall K3s from a server node, run:
