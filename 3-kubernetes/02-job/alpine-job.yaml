@@ -1,0 +1,15 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: alpine
+spec:
+  template:
+    # This is the pod template
+    spec:
+      containers:
+        - name: alpine
+          image: alpine:3.12
+          command: ['sh', '-c', 'echo "Hello, Kubernetes! (and sleep for 1 hour)" && sleep 3600']
+      restartPolicy: OnFailure
+    # The pod template ends here
