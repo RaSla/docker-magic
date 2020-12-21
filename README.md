@@ -13,7 +13,11 @@ I divide **Docker-Magic** into 3 levels:
     * Mapping files/dirs between docker-containers and Host-OS
     * Mapping TCP/UDP ports between docker-containers and Host-OS
     * Limits of the resources for docker-containers
-1. **Kubernetes** - using the **orchestrator** for full control (many applications, multi-server cluster)
+1. **Kubernetes** - using the **orchestrator** for full control (many applications, multi-server cluster):
+    * Deploy Pods (containers) in Kubernetes-cluster
+    * Configure Applications by ConfigMaps, ENV-vars and Secrets
+    * Expose HTTP / HTTPS routes and TCP ports for the services
+    * Persistent Storage for some Pods
 
 ## Requirements
 * Install **[Docker-CE](https://docs.docker.com/install/)**  
