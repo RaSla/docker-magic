@@ -213,7 +213,7 @@ $ rm k9s_Linux_x86_64.tar.gz
 
 ### 5. HELM v3
 ```console
-$ HELM_VERSION=v3.4.1
+$ HELM_VERSION=v3.4.2
 $ wget https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz
 $ tar -zxvf helm-${HELM_VERSION}-linux-amd64.tar.gz linux-amd64/helm
 $ sudo mv linux-amd64/helm /usr/local/bin/helm
@@ -258,7 +258,7 @@ $ kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/co
 Full manual is located here - [rancher.com/docs/k3s/latest/en/upgrades/automated/](https://rancher.com/docs/k3s/latest/en/upgrades/automated/)
 Install the system-upgrade-controller
 ```console
-$ kubectl apply -f https://github.com/rancher/system-upgrade-controller/releases/download/v0.4.0/system-upgrade-controller.yaml
+$ kubectl apply -f https://github.com/rancher/system-upgrade-controller/releases/download/v0.6.2/system-upgrade-controller.yaml
 ```
 Configure plans - make **k3s_upgrade.yaml**
 ```yaml
@@ -281,7 +281,7 @@ spec:
   upgrade:
     image: rancher/k3s-upgrade
   # Upgrade type: version or channel
-  #version: v1.18.12+k3s1
+  #version: v1.18.13+k3s1
   channel: https://update.k3s.io/v1-release/channels/v1.18  # v1.18 / v1.19 / stable / latest
 
 ---
@@ -302,7 +302,7 @@ spec:
     args:
     - prepare
     - server-plan
-    image: rancher/k3s-upgrade:v1.18.12-k3s1
+    image: rancher/k3s-upgrade  # :v1.18.13+k3s1
   serviceAccountName: system-upgrade
   upgrade:
     image: rancher/k3s-upgrade
