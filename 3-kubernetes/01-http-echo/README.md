@@ -1,6 +1,6 @@
 # 01. HTTP-echo
 Very simple example for Kubernetes:
-* Create personal **Namespace** for
+* Create personal **Namespace** in Cluster
 * Start few **Pods** with web-service 'HTTP(S)-echo'
 * Make **Service** for them
 * Make **Ingress-rule** for routing '/echo/' to the Service
