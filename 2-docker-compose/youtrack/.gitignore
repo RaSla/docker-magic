@@ -1,0 +1,17 @@
+.env
+docker-compose.override.yml
+
+## current data
+backups
+conf
+data
+logs
+
+## Backup- and local- version
+*~
+*.bak
+*.local
+backups
+_backups
+*.sql
+*.sql.gz

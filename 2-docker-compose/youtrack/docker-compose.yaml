@@ -1,0 +1,19 @@
+version: "2.4"
+services:
+
+  youtrack:
+    image: jetbrains/youtrack:2020.6.1767
+    container_name: youtrack
+    volumes:
+      - ./data:/opt/youtrack/data
+      - ./conf:/opt/youtrack/conf
+      - ./logs:/opt/youtrack/logs
+      - ./backups:/opt/youtrack/backups
+    expose:
+      - 8080
+
+# docker network create app
+networks:
+  default:
+    external:
+      name: "app"
