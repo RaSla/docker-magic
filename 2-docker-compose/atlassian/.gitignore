@@ -1,0 +1,15 @@
+.env
+docker-compose.override.yml
+
+## current data
+confluence/
+jira/
+
+## Backup- and local- version
+*~
+*.bak
+*.local
+backups
+_backups
+*.sql
+*.sql.gz
