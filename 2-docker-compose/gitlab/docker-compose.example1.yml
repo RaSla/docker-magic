@@ -7,28 +7,18 @@ services:
     environment:
       GITLAB_OMNIBUS_CONFIG: |
         external_url 'https://$GITLAB_HOSTNAME'
-        nginx['listen_port'] = $GITLAB_NGINX_PORT
-        nginx['listen_https'] = false
-        nginx['redirect_http_to_https'] = false
-        nginx['proxy_set_headers'] = {
-          'Host' => '$GITLAB_HOSTNAME',
-          'X-Forwarded-Proto' => 'https',
-          'X-Forwarded-Ssl' => 'on',
-        }
+        nginx['listen_https'] = true
+        nginx['redirect_http_to_https'] = true
+        nginx['ssl_certificate'] = "$SSL_FULLCHAIN"
+        nginx['ssl_certificate_key'] = "$SSL_PRIVKEY"
 
         gitlab_rails['time_zone'] = 'UTC'
-        gitlab_rails['gitlab_shell_ssh_port'] = $SSH_PORT
+        gitlab_rails['gitlab_shell_ssh_port'] = $GITLAB_SSH_PORT
 
         gitlab_rails['registry_enabled'] = true
-        registry_external_url 'https://$REGISTRY_HOSTNAME'
-        registry_nginx['enable'] = true
-        registry_nginx['listen_port'] = $REGISTRY_PORT
-        registry_nginx['listen_https'] = false
-        registry_nginx['proxy_set_headers'] = {
-          'Host' => '$REGISTRY_HOSTNAME',
-          'X-Forwarded-Proto' => 'https',
-          'X-Forwarded-Ssl' => 'on'
-        }
+        registry_external_url 'https://$GITLAB_HOSTNAME:$GITLAB_REGISTRY_PORT'
+        registry_nginx['ssl_certificate']   = "$SSL_FULLCHAIN"
+        registry_nginx['ssl_certificate_key'] = "$SSL_PRIVKEY"
         #
         monitoring_role['enable'] = false
         alertmanager['enable'] = false
@@ -44,12 +34,14 @@ services:
     hostname: "gitlab"
     volumes:
       - "./gitlab/etc:/etc/gitlab"
+      - "./gitlab/ssl:/ssl:ro"
       - "./gitlab/var:/var/opt/gitlab"
       - "./gitlab/log:/var/log/gitlab"
     ports:
-      - "$SSH_PORT:$SSH_PORT"  # SSH
-      #- "$NGINX_PORT:$NGINX_PORT"
-      #- "$REGISTRY_PORT:$REGISTRY_PORT"  # Container Registry
+      - "$GITLAB_SSH_PORT:22"    # SSH
+      - "80:80"
+      - "443:443"
+      - "$GITLAB_REGISTRY_PORT:$GITLAB_REGISTRY_PORT"  # Docker Container Registry
     restart: always
 
 # docker network create app
