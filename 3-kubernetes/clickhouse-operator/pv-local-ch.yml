@@ -1,0 +1,14 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-local-ch
+spec:
+  accessModes: ["ReadWriteOnce"]
+  capacity:
+    storage: 100Gi
+  hostPath:
+    path: "/srv/chi-demo"
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: local-path
+  volumeMode: Filesystem

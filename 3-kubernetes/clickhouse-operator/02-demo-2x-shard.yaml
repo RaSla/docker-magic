@@ -1,0 +1,31 @@
+apiVersion: clickhouse.altinity.com/v1
+kind: ClickHouseInstallation
+metadata:
+  name: demo-02
+  labels:
+    env: test
+    example: "02"
+spec:
+  configuration:
+    clusters:
+      - name: demo
+        layout:
+          shardsCount: 2
+          replicasCount: 1
+    # https://github.com/Altinity/clickhouse-operator/blob/master/docs/chi-examples/05-settings-01-overview.yaml
+    users:
+      demo/password: secret
+      demo/profile: default
+      demo/networks/ip:
+        - "127.0.0.1/32"
+        - "10.0.0.0/8"
+  defaults:
+    templates:
+      podTemplate: clickhouse-20.8
+  templates:
+    podTemplates:
+      - name: clickhouse-20.8
+        spec:
+          containers:
+            - name: clickhouse
+              image: yandex/clickhouse-server:20.8.9.6
