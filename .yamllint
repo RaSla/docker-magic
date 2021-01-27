@@ -1,16 +1,26 @@
 # (once) Install YAML Linter
-# sudo pip3 install yamllint
-extends: default
+# sudo pip3 install yamllint==1.25.0
 
+##  https://yamllint.readthedocs.io/en/stable/rules.html#module-yamllint.rules
 rules:
-  # 80 chars should be enough, but don't fail if a line is longer
+  # missing document start "---"
+  document-start: false
+  # { ... }
+  braces:
+    min-spaces-inside: 0
+    max-spaces-inside: 1
+  # [ ... ]
+  brackets:
+    level: warning
+  # Comments
+  comments:
+    require-starting-space: false
+  comments-indentation: false
+  # 120 chars should be enough, but don't fail if a line is longer
   line-length:
-    max: 100
+    max: 120
     level: warning
 
   # don't bother me with this rule
-  #indentation: disable
-  comments: disable
-  comments-indentation: disable
-  document-start: disable
-  truthy: disable
+  indentation:
+    indent-sequences: whatever
