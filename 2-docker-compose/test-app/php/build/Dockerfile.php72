@@ -1,0 +1,88 @@
+# See some usefull hacks there: https://github.com/chrootlogin/docker-nextcloud/blob/master/Dockerfile
+FROM php:7.2-fpm-alpine
+MAINTAINER RaSla <rasla@mail.ru>
+
+# MCRYPT_VERSION "1.0.2	snapshot	2019-01-10; 1.0.2 for PHP 7.4; 1.0.1 for PHP 7.2-7.3; 1.0.0 for PHP 7.1+"
+#ENV MCRYPT_VERSION    1.0.1
+# MEMCACHED_VERSION "3.1.3	stable	2018-12-24; 3.0.x for PHP 7.0+; 2.2.0 for PHP 5.6+"
+#ENV MEMCACHED_VERSION 3.1.3
+# MONGODB_VERSION "1.5.3	stable	2018-09-20; 1.5.x for PHP 5.5+"
+#ENV MONGODB_VERSION   1.5.3
+# REDIS_VERSION "4.3.0	stable	2019-03-13; 3.1.6	stable	2018-01-03 - is the latest 3.x"
+ENV REDIS_VERSION     4.3.0
+# XDEBUG_VERSION "2.7.2	stable	2019-05-06; PHP 7.0+"
+#ENV XDEBUG_VERSION    2.7.2
+
+### Install PHP-extensions
+RUN set -ex \
+## Pecl build tools (pcre-dev)
+  && apk update \
+  && apk add --progress --virtual .phpize-deps $PHPIZE_DEPS curl-dev \
+## curl mbstring opcache
+  && docker-php-ext-install curl opcache \
+## mcrypt
+#  && apk add libmcrypt-dev libmcrypt \
+#  && pecl install mcrypt-$MCRYPT_VERSION \
+#  && apk del libmcrypt-dev \
+## MongoDB
+#  && pecl install mongodb-${MONGODB_VERSION} \
+#  && docker-php-ext-enable --ini-name 20-mongodb.ini mongodb \
+## PDO: MySQL
+  && docker-php-ext-install mysqli pdo_mysql \
+## PDO: PostgreSQL
+  && apk add postgresql-dev postgresql-libs \
+  && docker-php-ext-install pdo_pgsql pgsql \
+  && apk del postgresql-dev \
+## Redis
+  && pecl install redis-$REDIS_VERSION \
+  && docker-php-ext-enable redis \
+## Memcached
+#  && apk add cyrus-sasl-dev libmemcached libmemcached-dev zlib-dev \
+#  && pecl install memcached-$MEMCACHED_VERSION \
+#  && docker-php-ext-enable memcached \
+#  && apk del cyrus-sasl-dev libmemcached-dev zlib-dev \
+## ImageMagicK
+#  && apk add imagemagick-dev libtool \
+#  && pecl install imagick \
+#  && docker-php-ext-enable imagick \
+#  && apk del imagemagick-dev \
+## GD
+#  && apk add freetype freetype-dev libjpeg-turbo libjpeg-turbo-dev libpng libpng-dev \
+#  && docker-php-ext-configure gd --with-freetype-dir=/usr --with-png-dir=/usr --with-jpeg-dir=/usr \
+#  && docker-php-ext-install exif gd \
+#  && apk del freetype-dev libjpeg-turbo-dev libpng-dev \
+## XDEBUG
+#  && pecl install xdebug-$XDEBUG_VERSION \
+#  && docker-php-ext-enable --ini-name 20-xdebug.ini xdebug \
+## Clean up
+  && apk del .phpize-deps \
+  && docker-php-source delete \
+  && rm -rf /var/cache/apk/* \
+  && rm -rf /usr/share/php7 \
+  && rm -rf /tmp/*
+
+### Tuning PHP
+#RUN set -ex && \
+##  sed -i 's/pm.max_children = 5/pm.max_children = 20/; s/pm.start_servers = 2/pm.start_servers = 3/; s/pm.min_spare_servers = 1/pm.min_spare_servers = 1/; s/pm.max_spare_servers = 3/pm.max_spare_servers = 8/' /usr/local/etc/php-fpm.d/www.conf && \
+#  echo "memory_limit = 256M" >> $PHP_INI_DIR/php.ini && \
+#  echo "max_execution_time = 120" >> $PHP_INI_DIR/php.ini && \
+#  echo "upload_max_filesize = 20M" >> $PHP_INI_DIR/php.ini && \
+#  echo "post_max_size = 20M" >> $PHP_INI_DIR/php.ini && \
+## Done
+#  php -v
+
+## User (correct access rights for integration with localhost
+#ARG UID="1000"
+#ARG GID="1000"
+#RUN set -ex && \
+#  echo "php-user:x:$UID:$GID:PHP User,,,:/home/php-user:/bin/false" >> /etc/passwd  && \
+#  echo "php-user:x:$GID:php-user" >> /etc/group  && \
+#  mkdir -p /home/php-user  && \
+#  chown $UID:$GID /home/php-user  && \
+#  echo "user = php-user" >> /usr/local/etc/php-fpm.d/docker.conf  && \
+#  echo "group = php-user" >> /usr/local/etc/php-fpm.d/docker.conf
+
+WORKDIR /app
+# Build_Info (from CI, usualy)
+ARG BUILD_INFO="no info"
+ENV BUILD_INFO=$BUILD_INFO

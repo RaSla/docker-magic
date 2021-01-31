@@ -1,0 +1,55 @@
+------ Обслуживание и администрирование MySQL/MariaDB/Percona ------
+
+--- Создание пользователей и БД ---
+
+- Super DBA -
+mysql -u root -p
+> CREATE USER 'dba' IDENTIFIED BY 'DbaPass';
+> GRANT ALL ON *.* TO 'dba';
+> USE mysql;
+> UPDATE user SET Grant_priv='Y' WHERE user='dba';
+> FLUSH PRIVILEGES;
+> exit
+
+- Отдельная БД для конкретного Сайта/Приложения -
+
+> CREATE DATABASE u1_bd1;
+> CREATE USER 'user1' IDENTIFIED BY 'userPass';
+> GRANT ALL ON u1_bd1.* TO 'user1';
+
+--- РАБОТА С РЕЗЕРВНЫМИ КОПИЯМИ ---
+- Создание полного бэкапа БД
+mysqldump -u dba -pDbaPass DATABASE > /path/to/file/dump.sql
+
+- Создание полного бэкапа БД и сразу его архивируем
+mysqldump -u dba -pDbaPass DATABASE | gzip > /path/to/file/dump.sql.gz
+
+- Если нужно сделать дамп только одной или нескольких таблиц
+mysqldump -u USER -pPASSWORD DATABASE TABLE1 TABLE2 TABLE3 > /path/to/file/dump_table.sql
+
+---
+- РЕСТОР из бекапа в Базу Данных
+mysql -u USER -pPASSWORD DATABASE < /path/to/dump.sql
+
+- Рестор архив бекапа в Базу Данных
+gunzip < /path/to/outputfile.sql.gz | mysql -u USER -pPASSWORD DATABASE
+
+---  OPTIMIZE  ---
+time mysqlcheck -u root -p --auto-repair --optimize --all-databases
+
+--- INNODB COMPRESS table ---
+ALTER TABLE `wp_links` ENGINE='InnoDB' COLLATE 'utf8_unicode_ci' ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=8;
+
+--- ОБЩИЕ СОВЕТЫ ---
+
+* Полезно под каждую базу на боевом сервере создавать своего пользователя
+* Кодировка базы может быть любой, если она UTF-8
+* В большинстве случаев лучше использовать движок InnoDB
+* В PHP надо забыть про устаревшее расширение mysql_* и использовать PDO или MySQLi
+* Новую копию MySQL ОЧЕНЬ ЖЕЛАТЕЛЬНО сразу настроить и оптимизировать
+* Без особой нужды не стоит открывать MySQL наружу.
+ Вместо этого можно сделать проброс портов через SSH:
+ssh -fNL LOCAL_PORT:localhost:3306 REMOTE_USER@REMOTE_HOST
+
+https://habrahabr.ru/post/105954/ - "MySQL шпаргалки"
+

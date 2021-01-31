@@ -1,0 +1,99 @@
+version: '2.4'
+services:
+
+  nginx:
+#    container_name: demo_nginx
+    image: nginx:alpine
+# CPU Affinity, ex.: "0" / "2,3"
+    cpuset: "0"
+    ports:
+      - 82:80
+    depends_on:
+      - php
+      - py3_lb
+    restart: always
+    volumes:
+      - ./nginx/conf:/etc/nginx/conf.d
+      - ./nginx/log:/var/log/nginx
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./php/app:/app
+
+## PHP Application
+  php:
+#    container_name: demo_php
+    build:
+      args:
+        UID: ${USER_UID}
+        GID: ${USER_GID}
+      context: ./php/build
+      dockerfile: Dockerfile
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    restart: always
+    volumes:
+      - ./php/app:/app
+
+## Load Balancer for scaling Py3
+#  https://github.com/vegasbrianc/docker-compose-demo
+  py3_lb:
+#    container_name: demo_py3_lb
+    image: dockercloud/haproxy:1.6.7
+    links:
+      - py3
+    ports:
+      - 81:80
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+## Python3 App
+  py3:
+#    container_name: demo_py3
+    build:
+      context: ./py3
+      dockerfile: Dockerfile
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    depends_on:
+      - redis
+    expose:
+      - 8080
+    restart: always
+    scale: 2
+    volumes:
+      - ./py3/app:/app
+
+  redis:
+#    container_name: demo_redis
+    image: redis:5-alpine
+    command: ["sh", "-c", "exec redis-server --databases 1 --save \"\" "]
+    #command: ["sh", "-c", "exec redis-server --databases 1 --requirepass \"${REDIS_PASSWORD}\" --save \"\" "]
+    restart: always
+#    ulimits:
+#      memlock:
+#        soft: -1
+#        hard: -1
+
+  mysql:
+#    container_name: demo_mysql
+    image: percona:5.6  
+#    image: mysql:5.6
+    volumes:
+# conf.d:  MySQL 5.6-5.7 = /etc/mysql/conf.d ; Percona 5.6-5.7 = /etc/my.cnf.d ; Percona 8 = ??? /etc/percona-server.conf.d/
+#      - ./etc/mysql/conf.d:/etc/mysql/conf.d
+      - ./mysql/conf.d:/etc/my.cnf.d
+      - ./mysql/data:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    ports:
+      - 3306:3306
+    restart: always
+
+# docker network create app
+networks:
+  default:
+    external:
+      name: "app"
