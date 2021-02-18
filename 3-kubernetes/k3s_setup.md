@@ -110,8 +110,10 @@ $ service openntpd restart
 ### 3. K3S
 **Recommended** to install kubectl before install K3S.
 ```console
-## Ubuntu/Debian
-$ curl -sfL https://raw.githubusercontent.com/RaSla/docker-magic/develop/3-kubernetes/install_kubectl_by_apt.sh | sh -s
+## Ubuntu/Debian (apt)
+$ curl -sfL https://raw.githubusercontent.com/RaSla/sh/main/install_kubectl.sh | sudo bash -s k_apt
+## Any distr (by curl)
+$ curl -sfL https://raw.githubusercontent.com/RaSla/sh/main/install_kubectl.sh | sudo bash -s k_curl
 ```
 
 #### 3.1 Install K3S on Master-node
@@ -120,8 +122,8 @@ Run few command on k3s-master (by **Root**):
 ## Install or Upgrade K3S (WITHOUT Ingress-Traefik, for manual install Ingress-Nginx)
 ## -- by-version (v1.18.12+k3s1 / v1.19.4+k3s1)
 # curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION="v1.18.12+k3s1" sh -s - server --no-deploy traefik
-## -- by-channel (v1.18 / v1.19 / stable / latest)  \  Multi-Master
-# wget -O - https://get.k3s.io | INSTALL_K3S_CHANNEL="v1.19" sh -s - server --no-deploy traefik
+## -- by-channel (v1.18 / v1.20 / stable / latest)  \  Multi-Master
+# wget -O - https://get.k3s.io | INSTALL_K3S_CHANNEL="v1.20" sh -s - server --no-deploy traefik
 ## For install Multi-Master cluster, you need to append param:  --cluster-init
 
 ## Make bash-completion
@@ -213,7 +215,7 @@ $ rm k9s_Linux_x86_64.tar.gz
 
 ### 5. HELM v3
 ```console
-$ HELM_VERSION=v3.4.2
+$ HELM_VERSION=v3.5.2
 $ wget https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz
 $ tar -zxvf helm-${HELM_VERSION}-linux-amd64.tar.gz linux-amd64/helm
 $ sudo mv linux-amd64/helm /usr/local/bin/helm
@@ -319,9 +321,7 @@ plan.upgrade.cattle.io/agent-plan created
 ## Check
 $ kubectl -n system-upgrade get plans -o yaml
 $ kubectl -n system-upgrade get jobs -o yaml
-
 ```
-
 
 ## Uninstall
 To uninstall K3s from a server node, run:
