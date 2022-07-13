@@ -1,5 +1,5 @@
 # Monitoring
-Grafana + Prometheus (+ Alert Manager) = The most popular Monitoring-solution in 2019 !
+Grafana + Prometheus + Alert Manager = The most popular Monitoring-solution in 2019-2022 !
 
 **Prometheus** - polls Exporters and stores the received data.  
 **Grafana** - displays data on graphs.  
@@ -8,25 +8,29 @@ Grafana + Prometheus (+ Alert Manager) = The most popular Monitoring-solution in
 ## Install
 ```console
 # (optional) delete previous data
-$ docker run -it --rm -v $(pwd):/mnt busybox rm -rf /mnt/{grafana_data,prometheus_data}
+$ rm -rf {alertmanager,grafana,prometheus}/data
 ```
 
 ### Make data-dirs
 ```console
-$ mkdir -p {grafana_data,prometheus_data}
-$ chmod 777 {grafana_data,prometheus_data}
+$ mkdir -p {alertmanager,grafana,prometheus}/data
 ```
 
 ### Configure
-Copy and edit `.env` file
+Copy and edit `docker-compose.yml` and `.env` file (especially env-vars: `USER_UID` & `USER_GID`)
 ```console
 $ cp .env.example .env
 $ nano .env
 ```
-Copy and edit `prometheus.yaml` file
+Copy and edit Compose & Config files
 ```console
 $ cp prometheus/prometheus.example.yml prometheus/prometheus.yml
-$ nano prometheus/prometheus.yml
+$ cp prometheus/rules.example.yml prometheus/rules.yml
+$ cp docker-compose.example.yml docker-compose.yml
+
+## (Optional)
+$ cp blackbox/blackbox.example.yml blackbox/blackbox.yml
+$ cp alertmanager/config.example.yml alertmanager/config.yml
 ```
 
 ### Run Compose
@@ -35,8 +39,43 @@ Run
 $ docker-compose up -d
 ```
 
-### Add data source
-Open URL `<GRAFANA_ROOT_URL>` and logon as `admin` user with password (`GRAFANA_PASSWORD` value from `.env` file)
+## Prometheus
+Open URL `<PROM_EXTERNAL_URL>` try execute query: `up` or `up{job="node"}`.
+
+You should see a list with data like this:
+```text
+up{instance="node_exporter:9100", job="node"} - 1
+up{instance="cadvisor:8080", job="docker"} - 1
+```
+
+### Configure Prometheus
+You could configure `prometheus/*.yml`, check them and do HOT-reload of Prometheus by:
+```console
+$ docker-compose exec prometheus promtool check rules /etc/prometheus/rules.yml
+Checking /etc/prometheus/rules.yml
+  SUCCESS: 9 rules found
+
+$ docker-compose exec prometheus promtool check config /etc/prometheus/prometheus.yml
+Checking /etc/prometheus/prometheus.yml
+  SUCCESS: 1 rule files found
+ SUCCESS: /etc/prometheus/prometheus.yml is valid prometheus config file syntax
+
+Checking /etc/prometheus/rules.yml
+  SUCCESS: 9 rules found
+
+$ docker-compose exec prometheus kill -HUP 1
+```
+
+### Alert Rules
+You can get many useful rules from <https://awesome-prometheus-alerts.grep.to/rules.html> !!!
+
+## Grafana
+Open URL `<GRAFANA_ROOT_URL>`, logon with "admin / admin" credentials and change admin-password.
+
+First, default Datasource `Prometheus` already must be added (by `grafana/provisioning`).  
+Check it by URL `<GRAFANA_ROOT_URL>/datasources`
+
+### Add data source (manual)
 1. Click **"Add your first data source"** on 
 1. Select **"Prometheus"**
 1. Define **"URL"**: `http://prometheus:9090/`
@@ -54,8 +93,6 @@ Repeat it again with Dashboard ID `8321`
 ### HW and OS metric exporter
 * Install **Node_exporter** on target linux-hosts by Ansible role: [cloudalchemy.node-exporter](https://github.com/cloudalchemy/ansible-node-exporter)
 * Install **WMI exporter** on target windows-hosts
-
-### Configure Prometheus
 
 
 ## Exporters

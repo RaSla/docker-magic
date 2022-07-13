@@ -1,13 +1,26 @@
 # global config
 global:
-  scrape_interval:     10s # Set the scrape interval to every 10 seconds. Default is every 1 minute.
-  evaluation_interval: 10s # Evaluate rules every 10 seconds. The default is every 1 minute.
+  scrape_interval:     30s  # Set the scrape interval to every 30 seconds. Default is every 1 minute.
+  evaluation_interval: 30s  # Evaluate rules every 30 seconds. The default is every 1 minute.
+
+## Alerts
+# docker-compose exec prometheus promtool check rules /etc/prometheus/rules.yml
+rule_files:
+  - rules.yml
+
+alerting:
+  alertmanagers:
+  - scheme: http
+    static_configs:
+    - targets:
+      - "alertmanager:9093"
 
 # A scrape configuration
 scrape_configs:
-  # Scrape Prometheus itself (Dashboard #3662)
+  # Scrape Prometheus itself
+  # Grafana Dashboards: 3662
   - job_name: 'prometheus'
-    scrape_interval: 10s
+    scrape_interval: 1m
     static_configs:
       - targets:
           - 'localhost:9090'
@@ -15,45 +28,69 @@ scrape_configs:
   # Scrape the Node Exporter (nix) - https://github.com/prometheus/node_exporter
   # Grafana Dashboards: 11074, 1860
   - job_name: 'node'
-    scrape_interval: 10s
+#    scrape_interval: 10s
     static_configs:
       - targets:
           - 'node_exporter:9100'
-          #- '172.17.0.1:9100'  ## Docker Host-OS
-          #- '192.168.110.24:9100'   # devops-rasla
+#          - '192.168.100.106:9100'   # 106-sql
+#          - '192.168.100.110:9100'   # 110-ftp
+#          - '192.168.100.111:9100'   # 111-mon
+#          - '192.168.100.112:9100'   # 112-front11
+#          - '192.168.100.113:9100'   # 113-web
 
   # Scrape the WMI Exporter - https://github.com/martinlindhe/wmi_exporter
   # Grafana Dashboards: 2129
-  - job_name: 'node-windows'
-    scrape_interval: 10s
+#  - job_name: 'node-windows'
+#    scrape_interval: 30s
+#    static_configs:
+#      - targets:
+#          # Windows host-metrics, by
+#          - '192.168.110.19:9182'   # stas-pc
+#        labels:
+#          alias: node_win
+
+  # Scrape the Blackbox
+  # Grafana Dashboards: 7587
+  - job_name: 'blackbox'
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+    scrape_interval: 1m
     static_configs:
       - targets:
-          # Windows host-metrics, by
-          - '192.168.110.19:9182'   # stas-pc
+        - https://rasla.ru/hi
+        - https://help.rasla.ru
+        - https://winpe.rasla.ru
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox:9115  # The blackbox exporter's real hostname:port.
+#      - source_labels: [__meta_dns_name]
+#        target_label: __param_hostname  # Make domain name become 'Host' header for probe requests
+#      - source_labels: [__meta_dns_name]
+#        target_label: vhost  # and store it in 'vhost' label
 
   # Scrape the cAdvisor - https://github.com/google/cadvisor
   # Grafana Dashboards: 8321
   - job_name: docker
-    scrape_interval: 10s
+    scrape_interval: 30s
     static_configs:
       - targets:
           - 'cadvisor:8080'
+#          - '192.168.100.111:8080'   # 111-mon
+#          - '192.168.100.113:8080'   # 113-web
 
-  # Scrape the RabbitMQ Exporter - https://github.com/kbudde/rabbitmq_exporter
-  # Grafana Dashboards: 4279
-#  - job_name: rabbitmq_exporter
-#    scrape_interval: 20s
+  # Scrape the Mysql Exporter - https://github.com/prometheus/mysqld_exporter
+  # Grafana Dashboards: 7362
+  #   https://github.com/percona/grafana-dashboards/blob/main/dashboards/MySQL/MySQL_Instances_Overview.json
+#  - job_name: mysql
+#    scrape_interval: 1m
 #    static_configs:
 #      - targets:
-#          - '192.168.110.15:9419'  # des-pc
-
-  # Scrape the Redis Exporter - https://github.com/oliver006/redis_exporter
-  # Grafana Dashboards: 763
-#  - job_name: redis_exporter
-#    scrape_interval: 10s
-#    static_configs:
-#      - targets:
-#          #- 'localhost:9121'
+#          - '192.168.100.106:9104'   # 106-sql
 
   # Scrape the Postgres Exporter - https://github.com/wrouesnel/postgres_exporter
   # Grafana Dashboards: 6742
@@ -62,3 +99,19 @@ scrape_configs:
 #    static_configs:
 #      - targets:
 #          #- 'localhost:9187'
+
+  # Scrape the RabbitMQ Exporter - https://github.com/kbudde/rabbitmq_exporter
+  # Grafana Dashboards: 4279
+#  - job_name: rabbitmq_exporter
+#    scrape_interval: 30s
+#    static_configs:
+#      - targets:
+#          - '192.168.110.15:9419'  # des-pc
+
+  # Scrape the Redis Exporter - https://github.com/oliver006/redis_exporter
+  # Grafana Dashboards: 763
+#  - job_name: redis_exporter
+#    scrape_interval: 30s
+#    static_configs:
+#      - targets:
+#          #- 'localhost:9121'

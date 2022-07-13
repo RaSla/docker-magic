@@ -1,0 +1,103 @@
+## https://awesome-prometheus-alerts.grep.to/rules.html
+
+## reload Prometheus configs & rules:
+#  docker-compose exec prometheus kill -HUP 1
+groups:
+  - name: blackbox
+    rules:
+    - alert: BlackboxSlowProbe
+      expr: avg_over_time(probe_duration_seconds[1m]) > 5
+      for: 1m
+      labels:
+        severity: warning
+      annotations:
+        summary: Blackbox slow probe (instance {{ $labels.instance }})
+        description: "Blackbox probe took more than 1s to complete\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+    - alert: BlackboxHttpStatusFailure
+      expr: probe_http_status_code <= 199 OR (probe_http_status_code >= 400 AND probe_http_status_code != 401)
+      for: 0m
+      labels:
+        severity: critical
+      annotations:
+        summary: Blackbox HTTP Status failure (instance {{ $labels.instance }})
+        description: "HTTP status code is not 200-399,401\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+    - alert: BlackboxSslCertificateWillExpireSoon
+      expr: probe_ssl_earliest_cert_expiry - time() < 86400 * 20
+      for: 0m
+      labels:
+        severity: warning
+      annotations:
+        summary: Blackbox SSL certificate will expire soon (instance {{ $labels.instance }})
+        description: "SSL certificate expires in 20 days\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+    - alert: BlackboxSslCertificateWillExpireVerySoon
+      expr: probe_ssl_earliest_cert_expiry - time() < 86400 * 3
+      for: 0m
+      labels:
+        severity: critical
+      annotations:
+        summary: Blackbox SSL certificate will expire soon (instance {{ $labels.instance }})
+        description: "SSL certificate expires in 3 days !!!\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+
+  - name: node_exporters
+    rules:
+      - alert: NodeIsDown
+        expr: up{job="node"} == 0
+        for: 0m
+        labels:
+          severity: error
+        annotations:
+          summary: "Node_exporter on server {{ $labels.instance }} is unavailable"
+          description: "The server is down, or service 'node_exporter' is unavailable"
+#          description: "The node is down, or service 'node_exporter' is unavailable\n VALUE = {{ $value }}\n LABELS = {{ $labels }}"
+
+      # Same rule using "node_filesystem_free_bytes" will fire when disk fills for non-root users.
+#      - alert: HostOutOfDiskSpace
+#        expr: (node_filesystem_avail_bytes * 100) / node_filesystem_size_bytes < 10 and ON (instance, device, mountpoint) node_filesystem_readonly == 0
+#        for: 2m
+#        labels:
+#          severity: warning
+#        annotations:
+#          summary: Host out of disk space (instance {{ $labels.instance }})
+#          description: "Disk is almost full (< 10% left)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+      # Same rule using "node_filesystem_free_bytes" will fire when disk fills for non-root users.
+      - alert: HostDiskWillFillIn24Hours
+        expr: (node_filesystem_avail_bytes * 100) / node_filesystem_size_bytes < 10 and ON (instance, device, mountpoint) predict_linear(node_filesystem_avail_bytes{fstype!~"tmpfs"}[1h], 24 * 3600) < 0 and ON (instance, device, mountpoint) node_filesystem_readonly == 0
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: Host disk will fill in 24 hours (instance {{ $labels.instance }})
+          description: "Filesystem is predicted to run out of space within the next 24 hours at current write rate\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+      - alert: HostFsRootFreeIsLow
+        expr: node_filesystem_free_bytes{mountpoint="/"} < 300000000
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Root-FS on server {{ $labels.instance }} has  < 300 Mb free"
+          description: "Root-FS free space is too low:\n Delete unnecessary files, or do 'lvextend'"
+
+      - alert: HostCpuHighLoad
+        expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[2m])) * 100) > 80
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          summary: Host high CPU load (instance {{ $labels.instance }})
+          description: "CPU load is > 80%\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+      - alert: HostCpuHighIowait
+        expr: avg by (instance) (rate(node_cpu_seconds_total{mode="iowait"}[5m])) * 100 > 10
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          summary: Host CPU high iowait (instance {{ $labels.instance }})
+          description: "CPU iowait > 5%. A high iowait means that you are disk or network bound.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+

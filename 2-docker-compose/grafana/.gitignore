@@ -1,3 +1,13 @@
-grafana_data
-prometheus_data
+alertmanager/config.yml
+alertmanager/data
+blackbox/blackbox.yml
+grafana/data
+prometheus/data
 prometheus/prometheus.yml
+prometheus/rules.yml
+# local
+.env
+docker-compose.yml
+*.local
+*.bak
+*~

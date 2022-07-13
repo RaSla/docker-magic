@@ -5,28 +5,31 @@ services:
   prometheus:
     image: prom/prometheus  # v2.36.2
     container_name: prometheus
+    hostname: prometheus
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
-      - "--storage.tsdb.path=/prometheus"
+      - "--storage.tsdb.path=/etc/prometheus/data"
       - "--storage.tsdb.retention.time=${PROM_RETENTION_TIME}"
       - "--web.console.libraries=/etc/prometheus/console_libraries"
       - "--web.console.templates=/etc/prometheus/consoles"
       - "--web.enable-lifecycle"
-    #ports:
-    #  - "${PROM_PORT}:9090"
+      - "--web.external-url=${PROM_EXTERNAL_URL}"
+    ports:
+      - "${PROM_PORT}:9090"
     restart: always
+    user: "${USER_UID}:${USER_GID}"
     volumes:
       - ./prometheus/:/etc/prometheus/
-      - ./prometheus_data:/prometheus
 
   grafana:
     image: grafana/grafana  # 9.0.2 / 8.5.6 / 7.5.16 / 6.7.6  -  https://hub.docker.com/r/grafana/grafana/tags
     container_name: grafana
+    hostname: grafana
     depends_on:
       - prometheus
     environment:
       # https://grafana.com/docs/installation/docker/
-      - "GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}"
+      # default l/p: admin / admin - change it on the FIRST logon !
       - "GF_SECURITY_ALLOW_EMBEDDING=true"
       - "GF_SERVER_ROOT_URL=${GRAFANA_ROOT_URL}"
     ports:
@@ -34,13 +37,41 @@ services:
     restart: always
     user: "${USER_UID}:${USER_GID}"
     volumes:
-      - ./grafana_data:/var/lib/grafana
+      - ./grafana/data:/var/lib/grafana
+      - ./grafana/provisioning/:/etc/grafana/provisioning/
+
+  alertmanager:
+    image: prom/alertmanager  # v0.24.0
+    container_name: alertmanager
+    hostname: alertmanager
+    command:
+      - '--config.file=/etc/alertmanager/config.yml'
+      - '--storage.path=/etc/alertmanager/data'
+    ports:
+      - ${ALERTMANAGER_PORT}:9093
+    restart: always
+    user: "${USER_UID}:${USER_GID}"
+    volumes:
+      - ./alertmanager:/etc/alertmanager
 
 ### EXPORTERS
+  blackbox:
+    image: prom/blackbox-exporter  # v0.21.1
+    container_name: blackbox
+    hostname: blackbox
+    command:
+      - "--config.file=/etc/blackbox/blackbox.yml"
+    ports:
+      - ${BLACKBOX_PORT}:9115
+    restart: always
+    volumes:
+      - ./blackbox:/etc/blackbox
+
   # https://github.com/google/cadvisor
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:v0.39.3  # v0.39.3
     container_name: cadvisor
+    hostname: cadvisor
     #ports:
     #  - 8080:8080
     privileged: true
@@ -54,7 +85,7 @@ services:
 
   # https://github.com/prometheus/node_exporter
   node_exporter:
-    image: prom/node-exporter:v1.3.1  # v1.3.1
+    image: prom/node-exporter  # v1.3.1
     container_name: node_exporter
     command:
       - '--path.procfs=/host/proc'
@@ -70,20 +101,6 @@ services:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
       - /:/rootfs:ro
-
-### Alert Manager
-#  alertmanager:
-#    image: prom/alertmanager  # v0.24.0
-#    container_name: alertmanager
-#    command:
-#      - '--config.file=/etc/alertmanager/config.yml'
-#      - '--storage.path=/alertmanager'
-#    ports:
-#      - 9093:9093
-#    restart: always
-#    volumes:
-#      - ./alertmanager/:/etc/alertmanager/
-## (Alertmanager v0.24+ has Telegram support out of the box)
 
 # docker network create app
 networks:

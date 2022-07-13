@@ -1,0 +1,20 @@
+## https://github.com/prometheus/alertmanager/blob/main/doc/examples/simple.yml
+global:
+#  telegram_api_url: https://api.telegram.org
+
+route:
+  group_by: ['alertname']
+  group_wait: 30s
+  group_interval: 30s
+  receiver: 'tg-ra-alerts'
+  repeat_interval: 10m
+
+receivers:
+- name: 'tg-ra-alerts'
+  telegram_configs:
+  - api_url: https://api.telegram.org
+    bot_token: "YYYYYYYY:ZZZZZZZZZZZZZZZZZZZZZZZZZZZZ"
+    chat_id: -XXXXXXX  # Telegram_Alerts
+    message: '{{ template "telegram.default.message" .}}'
+    parse_mode: ""
+    send_resolved: true
