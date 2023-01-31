@@ -25,10 +25,10 @@ docker:
 		-f Dockerfile .
 	docker images | grep $(PROJECT_NAME)
 
-docker_clean:
+clean:
 	docker container prune -f ; docker image prune -f ; docker volume prune -f
 
-images:
+list-images:
 	docker images | grep $(PROJECT_NAME)
 
 run:
