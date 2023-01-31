@@ -1,0 +1,26 @@
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+## IDE
+.vscode
+*.swp
+
+## Backups
+*.bak
+*.local
+*~
+## Local
+.DS_Store
+.env
+*.log
+
+## Ignore all git- and docker- stuff, hidden files
+Dockerfile*
+.[a-z]*
+## Ignore MarkDown-Docs
+*.md
+## local dev-stuff
+Makefile*
+bin

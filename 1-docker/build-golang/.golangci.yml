@@ -1,0 +1,12 @@
+run:
+#  modules-download-mode: vendor
+linters:
+  enable-all: true
+  disable:
+#    - gochecknoglobals
+#    - funlen
+    - gofumpt
+    - gomnd
+    - golint
+    - stylecheck
+    - wsl

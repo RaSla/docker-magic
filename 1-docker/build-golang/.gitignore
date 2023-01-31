@@ -1,0 +1,6 @@
+bin
+.*sh_history
+*.tar
+# local make
+.cache
+.gitconfig
