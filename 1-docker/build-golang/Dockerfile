@@ -10,7 +10,7 @@ WORKDIR /src
 # COPY ./go.mod .
 # COPY ./go.sum .
 # ARG CI_JOB_TOKEN
-# RUN git config --global url."https://gitlab-ci-token:$CI_JOB_TOKEN@gitlab.tcsbank.ru".insteadOf https://gitlab.tcsbank.ru
+# RUN git config --global url."https://gitlab-ci-token:$CI_JOB_TOKEN@gitlab.rasla.ru".insteadOf https://gitlab.rasla.ru
 # RUN go mod download
 
 COPY . .
