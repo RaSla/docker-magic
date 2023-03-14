@@ -40,8 +40,8 @@ net.ipv4.tcp_fin_timeout = 30
 net.core.rmem_max = 16777216
 net.core.wmem_max = 16777216
 # Увеличиваем лимиты автотюнинга (min, default, max bytes)
-net.ipv4.tcp_rmem = 4096 131072 16777216
-net.ipv4.tcp_wmem = 4096 174760 16777216
+net.ipv4.tcp_rmem = 4096 8192 131072
+net.ipv4.tcp_wmem = 4096 8192 131072
 net.ipv4.netfilter.ip_conntrack_max = 16777216
 
 ## sysctl -p --system
@@ -113,7 +113,7 @@ $ service openntpd restart
 ## Ubuntu/Debian (apt)
 $ curl -sfL https://raw.githubusercontent.com/RaSla/sh/main/install_kubectl.sh | sudo bash -s k_apt
 ## Any distr (by curl)
-$ curl -sfL https://raw.githubusercontent.com/RaSla/sh/main/install_kubectl.sh | sudo bash -s k_curl
+$ curl -sfL https://raw.githubusercontent.com/RaSla/sh/main/install_kubectl.sh | sudo bash -s k_curl v1.22.17
 ```
 
 #### 3.1 Install K3S on Master-node
@@ -215,7 +215,7 @@ $ rm k9s_Linux_x86_64.tar.gz
 
 ### 5. HELM v3
 ```console
-$ HELM_VERSION=v3.5.2
+$ HELM_VERSION=v3.7.2
 $ wget https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz
 $ tar -zxvf helm-${HELM_VERSION}-linux-amd64.tar.gz linux-amd64/helm
 $ sudo mv linux-amd64/helm /usr/local/bin/helm

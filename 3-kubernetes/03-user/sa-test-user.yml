@@ -1,0 +1,6 @@
+# kubectl create serviceaccount test-user -n test
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: test-user
+  namespace: test
