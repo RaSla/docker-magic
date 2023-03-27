@@ -17,3 +17,6 @@ acme-dns.sh.env
 *.swp
 .DS_Store
 *.log
+
+## k8s
+_config-*.yml
