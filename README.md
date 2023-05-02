@@ -39,7 +39,7 @@ or deb-package **docker.io** (Ubuntu 16.04+, Debian 10+): `sudo apt install dock
 Before commit changes - you MUST check code (& fix errors, if possible) by linter:
 ```bash
 ## (once) Install Linters
-sudo pip3 install yamllint==1.25.0
+sudo pip3 install yamllint==1.28.0
 
 ## PRE-commit check
 yamllint .

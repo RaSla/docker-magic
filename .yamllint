@@ -1,5 +1,5 @@
 # (once) Install YAML Linter
-# sudo pip3 install yamllint==1.25.0
+# pip3 install yamllint==1.28.0
 
 ##  https://yamllint.readthedocs.io/en/stable/rules.html#module-yamllint.rules
 rules:
@@ -16,11 +16,11 @@ rules:
   comments:
     require-starting-space: false
   comments-indentation: false
+  # indent-size any, but aligned & fixed
+  indentation:
+    indent-sequences: whatever
   # 120 chars should be enough, but don't fail if a line is longer
   line-length:
     max: 120
     level: warning
-
-  # don't bother me with this rule
-  indentation:
-    indent-sequences: whatever
+  new-line-at-end-of-file: enable
