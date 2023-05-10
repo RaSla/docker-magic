@@ -114,6 +114,13 @@ $ service openntpd restart
 $ curl -sfL https://raw.githubusercontent.com/RaSla/sh/main/install_kubectl.sh | sudo bash -s k_apt
 ## Any distr (by curl)
 $ curl -sfL https://raw.githubusercontent.com/RaSla/sh/main/install_kubectl.sh | sudo bash -s k_curl v1.22.17
+
+## rootless kubectl
+$ wget https://storage.googleapis.com/kubernetes-release/release/v1.22.17/bin/linux/amd64/kubectl
+$ chmod +x kubectl
+$ mkdir -p ~/.local/bin
+$ mv -f kubectl ~/.local/bin
+$ echo 'if [ $(which kubectl | wc -l) = "1" ]; then source <(kubectl completion bash) ; fi' >> ~/.bashrc
 ```
 
 #### 3.1 Install K3S on Master-node
