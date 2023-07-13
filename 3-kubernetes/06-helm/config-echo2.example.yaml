@@ -9,10 +9,10 @@ ingress:
   hosts:
     - host: k8s.n.rasla.ru
       paths:
-        - path: /echo(/|$)(.*)
+        - path: /echo2/(.*)
           pathType: Prefix
-#  annotations:
-#    nginx.ingress.kubernetes.io/rewrite-target: /$2  # /api/$2
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$1  # /api/$2
 
 resources:
    requests:
