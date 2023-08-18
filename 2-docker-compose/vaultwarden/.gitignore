@@ -1,0 +1,10 @@
+.env
+docker-compose.override.yml
+
+## current data
+vw-data
+
+## Backup- and local- version
+*~
+*.bak
+*.local

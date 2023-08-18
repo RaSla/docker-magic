@@ -1,0 +1,11 @@
+version: "2.4"
+services:
+# user UID & GID  MUST BE  equal local user ID
+# rasla@devops-rasla:~/git/project/repo$ id
+# uid=1000(rasla) gid=1000(rasla) ...
+  vaultwarden:
+#    environment:
+#      DOMAIN: http://vaultwarden.local
+#    tmpfs:
+#      - "/data/icon_cache:uid=${USER_UID}"
+    user: "${USER_UID}:${USER_GID}"

@@ -1,0 +1,21 @@
+version: "2.4"
+services:
+  vaultwarden:
+    image: vaultwarden/server:1.29.1-alpine  # :1.27.0
+    #container_name: vaultwarden
+    environment:
+      #DOMAIN: http://vaultwarden.local
+      ADMIN_TOKEN: "${VW_ADMIN_TOKEN}"
+      ROCKET_PORT: "${VW_PORT}"
+    ports:
+      - "${VW_PORT}:${VW_PORT}"
+    restart: always
+    #user: "${USER_UID}:${USER_GID}"
+    volumes:
+      - ./vw-data/:/data/
+
+# docker network create app
+networks:
+  default:
+    external:
+      name: "app"
