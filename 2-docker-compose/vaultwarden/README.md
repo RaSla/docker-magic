@@ -2,7 +2,7 @@
 
 Alternative implementation of the Bitwarden server API written in Rust and compatible with upstream Bitwarden clients.
 
-Perfect for self-hosted deployment for:
+Perfect for self-hosted deployment for the **storage of secrets** :
 
 * Web-interface
 * Store & management secrets
