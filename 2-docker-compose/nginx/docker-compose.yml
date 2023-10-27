@@ -2,14 +2,15 @@ version: '2.4'
 services:
 
   nginx:
-    image: nginx:alpine
+    image: nginx:alpine  # 1.25.3-alpine
     container_name: nginx
-    hostname: "nginx"
+    hostname: nginx
 # CPU Affinity, ex.: "0" / "2,3"
     cpuset: "0"
     ports:
-      - "80:80"
-      - "443:443"
+      - 80:80
+      - 443:443
+      - 443:443/udp  # h3 / quic
     restart: always
     volumes:
       - ./conf:/etc/nginx/conf.d:ro
