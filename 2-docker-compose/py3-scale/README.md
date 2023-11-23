@@ -2,7 +2,10 @@
 A short demo on how to use docker-compose to create a Web Service connected to a load balancer and a Redis (In-Memory Cache).
 
 ## Start up and running
-Once you've cloned the project to your host we can now start our demo project.  
+After you have cloned the project to your hosting , 
+you must create a file.env in the image of .env.example .
+
+After that, you can run a demo project.
 ```bash
 cd 2-docker-compose/py3-scale
 
