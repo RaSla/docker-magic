@@ -9,7 +9,7 @@ After that, you can run a demo project.
 ```bash
 cd 2-docker-compose/py3-scale
 
-docker-compose up
+docker-compose up 
 ```
 
 Open URL [localhost/](http://localhost/) in your web-browser.
