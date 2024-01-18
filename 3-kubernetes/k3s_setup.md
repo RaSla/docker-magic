@@ -116,7 +116,7 @@ $ curl -sfL https://raw.githubusercontent.com/RaSla/sh/main/install_kubectl.sh |
 $ curl -sfL https://raw.githubusercontent.com/RaSla/sh/main/install_kubectl.sh | sudo bash -s k_curl v1.22.17
 
 ## rootless kubectl
-$ wget https://storage.googleapis.com/kubernetes-release/release/v1.22.17/bin/linux/amd64/kubectl
+$ wget https://storage.googleapis.com/kubernetes-release/release/v1.23.17/bin/linux/amd64/kubectl
 $ chmod +x kubectl
 $ mkdir -p ~/.local/bin
 $ mv -f kubectl ~/.local/bin
@@ -211,26 +211,40 @@ worker-01 Ready    <none>   114s  v1.18.12+k3s1
 
 ### 4. K9S (optional)
 [K9s](https://github.com/derailed/k9s) - Kubernetes CLI To Manage Your Clusters In Style!
+
+[K8S Compatibility Matrix](https://github.com/derailed/k9s#k8s-compatibility-matrix) - K9S x K8S client
+
 ```console
-## Install K9S - console tools for kubernetes
-$ K9S_VERSION=0.23.10
-$ wget https://github.com/derailed/k9s/releases/download/v${K9S_VERSION}/k9s_Linux_x86_64.tar.gz
-$ tar -xf k9s_Linux_x86_64.tar.gz k9s
+## Install K9S - TUI Kubernetes CLI To Manage Your Clusters In Style!
+## k8s client 1.21.3: wget https://github.com/derailed/k9s/releases/download/0.23.10/k9s_Linux_x86_64.tar.gz
+## k8s client 1.25.3: wget https://github.com/derailed/k9s/releases/download/0.26.7/k9s_Linux_x86_64.tar.gz
+## k8s client 1.26.1: >= v0.27.0
+$ K9S_VERSION=0.31.6
+$ wget https://github.com/derailed/k9s/releases/download/v${K9S_VERSION}/k9s_Linux_amd64.tar.gz
+$ tar -xf k9s_Linux_*.tar.gz k9s
+## ROOT
 $ sudo mv k9s /usr/local/bin/
-$ rm k9s_Linux_x86_64.tar.gz
+## ROOTLESS
+$ mv k9s ~/.local/bin/
+## Clean
+$ rm k9s_Linux_*.tar.gz
 ```
 
 ### 5. HELM v3
 ```console
-$ HELM_VERSION=v3.7.2
+$ HELM_VERSION=v3.10.3
 $ wget https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz
 $ tar -zxvf helm-${HELM_VERSION}-linux-amd64.tar.gz linux-amd64/helm
+## ROOT
 $ sudo mv linux-amd64/helm /usr/local/bin/helm
+$ sudo helm completion bash > /etc/bash_completion.d/helm
+## ROOTLESS
+$ mkdir -p ~/.local/bin
+$ mv linux-amd64/helm ~/.local/bin/
+$ echo 'if [ $(which helm | wc -l) = "1" ]; then source <(helm completion bash) ; fi' >> ~/.bashrc
+## Clean
 $ rm -rf linux-amd64
 $ rm helm-${HELM_VERSION}-linux-amd64.tar.gz
-
-## BASH completion (by root)
-# helm completion bash > /etc/bash_completion.d/helm
 
 ## Stable-repo
 $ helm repo add stable https://charts.helm.sh/stable --force-update
