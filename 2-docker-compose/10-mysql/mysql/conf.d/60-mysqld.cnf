@@ -7,6 +7,7 @@ default-character-set = utf8mb4
 [mysqld]
 innodb_force_recovery = 0 #6 # 6- USE ONCE only for RECOVERY, and 0- for default
 #bind-address = 0.0.0.0
+tls_version=TLSv1.2
 
 ## utf8
 character-set-server = utf8
@@ -42,3 +43,4 @@ thread_cache_size = 32     # Increase until "SHOW GLOBAL STATUS LIKE 'Threads_cr
 
 #table_open_cache = 3000    # ulimit -n 50000 ; OR /etc/sysctl.conf : fs.file-max = 50000 ; sysctl -p
 binlog_cache_size = 1M
+sync_binlog=0
