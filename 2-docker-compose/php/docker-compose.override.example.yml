@@ -1,0 +1,30 @@
+version: '2.4'
+services:
+# user UID & GID  MUST BE  equal local user ID
+# rasla@devops-rasla:~/git/autoclassics/web$ id
+# uid=1000(rasla) gid=1000(rasla) ...
+  nginx:
+    #container_name: php_nginx
+# CPU Affinity, ex.: "0" / "2,3"
+    cpuset: "0"
+#    sysctls:
+#      net.ipv4.ip_unprivileged_port_start: 80
+    #hostname: nginx
+    tmpfs:
+      - /run:uid=${USER_UID}
+      - /var/cache/nginx:uid=${USER_UID}
+    user: ${USER_UID}:${USER_GID}
+
+  php:
+    build:
+      args:
+        UID: ${USER_UID}
+        GID: ${USER_GID}
+        # php
+        MEMORY_LIMIT: ${MEMORY_LIMIT}
+        UPLOAD_MAX_SIZE: ${UPLOAD_MAX_SIZE}
+#    environment:
+#  More about XDEBUG configure:  https://xdebug.org/docs/remote
+#      XDEBUG_CONFIG: remote_enable=1 remote_host=192.168.1.241
+#      PHP_IDE_CONFIG: serverName=proj-php
+    user: "${USER_UID}:${USER_GID}"

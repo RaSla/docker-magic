@@ -1,0 +1,23 @@
+## IDE
+.idea
+.vscode
+
+## LOCAL config
+.env
+docker-compose.override.yml
+
+## MySQL
+mysql/data/*
+!mysql/data/.empty
+
+## Nginx
+nginx/log
+
+## PHP
+php/log
+
+## local and backup files
+*~
+*.bak
+*.local
+

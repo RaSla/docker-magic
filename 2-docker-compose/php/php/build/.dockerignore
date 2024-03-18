@@ -1,0 +1,14 @@
+## Git
+.git
+## All hidden
+.[a-z]
+## Logs
+/log
+## DevOps staff
+ops
+Dockerfile*
+README.md
+# Trash
+*~
+*.bak
+*.local
