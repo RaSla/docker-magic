@@ -3,20 +3,21 @@
 .vscode
 *.iml
 
-## Confidentially
-.acme.sh
-.env
-acme-dns.sh.env
-
-## Backups and Local copies
+## Backup- and local- files
 *~
 *.bak
 *.local
 *.local.yaml
 *.local.yml
-*.swp
-.DS_Store
 *.log
+*.swp
+*.tmp
+**/.DS_Store
+
+## Confidential
+.acme.sh
+**/.env
+**/*.env
 
 ## k8s
 _config-*.yml
