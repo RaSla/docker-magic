@@ -17,14 +17,31 @@ services:
 
   php:
     build:
+      #dockerfile: Dockerfile.php72
       args:
         UID: ${USER_UID}
         GID: ${USER_GID}
         # php
-        MEMORY_LIMIT: ${MEMORY_LIMIT}
-        UPLOAD_MAX_SIZE: ${UPLOAD_MAX_SIZE}
+        MAX_EXECUTION_TIME: 30
+        MEMORY_LIMIT: 256M
+        UPLOAD_MAX_SIZE: 8M
+        TIME_ZONE: Asia/Yekaterinburg  # Europe/Moscow
+        # pecl
+        #INSTALL_BCMATH: 1
+        #INSTALL_GD: 1
+        #INSTALL_MEMCACHED: 0
+        #INSTALL_MYSQL: 1
+        #INSTALL_PGSQL: 1
+        #INSTALL_REDIS: 1
 #    environment:
-#  More about XDEBUG configure:  https://xdebug.org/docs/remote
+#  XDebug2 (PHP 5.6, 7.x) configure:  https://xdebug.org/docs/remote
 #      XDEBUG_CONFIG: remote_enable=1 remote_host=192.168.1.241
 #      PHP_IDE_CONFIG: serverName=proj-php
-    user: "${USER_UID}:${USER_GID}"
+#  XDebug3 (PHP 8.0+): https://xdebug.org/docs/upgrade_guide
+    user: ${USER_UID}:${USER_GID}
+
+# docker network create app
+#networks:
+#  default:
+#    external:
+#      name: "app"

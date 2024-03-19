@@ -4,14 +4,25 @@ MAINTAINER RaSla <rasla@mail.ru>
 
 # MCRYPT_VERSION "1.0.2	snapshot	2019-01-10; 1.0.2 for PHP 7.4; 1.0.1 for PHP 7.2-7.3; 1.0.0 for PHP 7.1+"
 #ENV MCRYPT_VERSION    1.0.1
-# MEMCACHED_VERSION "3.2.0	stable	2022-03-24; 3.2.0 for PHP 8.0-8.1; 3.1.5 for PHP 7.0-7.4; 2.2.0 for PHP 5.6+"
-ENV MEMCACHED_VERSION 3.1.5
-# MONGODB_VERSION "1.5.3	stable	2018-09-20; 1.5.x for PHP 5.5+"
-#ENV MONGODB_VERSION   1.5.3
-# REDIS_VERSION "6.0.2	stable	2023-10-22 (7.2+); 4.3.0  for PHP 7.0-7.4; 3.1.6	stable	2018-01-03 - is the latest 3.x"
-ENV REDIS_VERSION     6.0.2
-# XDEBUG_VERSION "2.7.2	stable	2019-05-06; PHP 7.0+"
-#ENV XDEBUG_VERSION    2.7.2
+# MEMCACHED_VERSION "3.2.0	stable	2022-03-24; 3.2.0 for PHP 7.0-8.1; 3.1.5 for PHP 7.0-7.4; 2.2.0 for PHP 5.6+"
+ARG MEMCACHED_VERSION=3.2.0
+#ENV MEMCACHED_VERSION=$MEMCACHED_VERSION
+# MONGODB_VERSION "1.17.3	stable	2024-03-15; 1.17.3 for PHP 7.4-8.2; 1.16.2 for PHP 7.2-7.4; 1.7.5 for PHP 5.6"
+#ARG MONGODB_VERSION=1.16.2
+#ENV MONGODB_VERSION=$MONGODB_VERSION
+# REDIS_VERSION "6.0.2	stable	2023-10-22 (7.2+); 6.0 for PHP 7.0-8.3; 4.3.0 for PHP 7.0-7.4; 3.1.6 for PHP 5.6"
+ARG REDIS_VERSION=6.0.2
+#ENV REDIS_VERSION=$REDIS_VERSION
+# XDEBUG_VERSION "3.3.1	stable	2023-12-14; 3.3.1 for PHP 8.0-8.3; 2.9.8 for PHP 7.0-7.4"
+ARG XDEBUG_VERSION=2.9.8
+#ENV XDEBUG_VERSION=$XDEBUG_VERSION
+
+ARG INSTALL_BCMATH=1
+ARG INSTALL_GD=1
+ARG INSTALL_MEMCACHED=0
+ARG INSTALL_MYSQL=1
+ARG INSTALL_PGSQL=0
+ARG INSTALL_REDIS=0
 
 ### Install PHP-extensions
 RUN set -ex \
@@ -19,7 +30,10 @@ RUN set -ex \
   && apk update \
   && apk add --progress --virtual .phpize-deps $PHPIZE_DEPS \
 ## curl mbstring opcache
-  && docker-php-ext-install opcache \
+  && docker-php-ext-install opcache ; \
+  if [ "${INSTALL_BCMATH}" = "1" ] ; then \
+	docker-php-ext-install bcmath ; \
+  fi ; \
 ## mcrypt
 #  && apk add libmcrypt-dev libmcrypt \
 #  && pecl install mcrypt-$MCRYPT_VERSION \
@@ -28,49 +42,60 @@ RUN set -ex \
 #  && pecl install mongodb-${MONGODB_VERSION} \
 #  && docker-php-ext-enable --ini-name 20-mongodb.ini mongodb \
 ## PDO: MySQL
-  && docker-php-ext-install mysqli pdo_mysql \
+  if [ "${INSTALL_MYSQL}" = "1" ] ; then \
+     docker-php-ext-install mysqli pdo_mysql ; \
+  fi ; \
 ## PDO: PostgreSQL
-#  && apk add postgresql-dev postgresql-libs \
-#  && docker-php-ext-install pdo_pgsql pgsql \
-#  && apk del postgresql-dev \
+  if [ "${INSTALL_PGSQL}" = "1" ] ; then \
+    apk add postgresql-dev postgresql-libs && \
+    docker-php-ext-install pdo_pgsql pgsql && \
+    apk del postgresql-dev ; \
+  fi ; \
 ## Redis
-  && pecl install redis-$REDIS_VERSION \
-  && docker-php-ext-enable redis \
+  if [ "${INSTALL_REDIS}" = "1" ] ; then \
+    pecl install redis-$REDIS_VERSION && \
+    docker-php-ext-enable redis ; \
+  fi ; \
 ## Memcached
-  && apk add cyrus-sasl-dev libmemcached libmemcached-dev zlib-dev \
-  && pecl install memcached-$MEMCACHED_VERSION \
-  && docker-php-ext-enable memcached \
-  && apk del cyrus-sasl-dev libmemcached-dev zlib-dev \
+  if [ "${INSTALL_MEMCACHED}" = "1" ] ; then \
+    apk add cyrus-sasl-dev libmemcached libmemcached-dev zlib-dev && \
+    pecl install memcached-$MEMCACHED_VERSION && \
+    docker-php-ext-enable memcached && \
+    apk del cyrus-sasl-dev libmemcached-dev zlib-dev ; \
+  fi ; \
 ## ImageMagicK
 #  && apk add imagemagick-dev libtool \
 #  && pecl install imagick \
 #  && docker-php-ext-enable imagick \
 #  && apk del imagemagick-dev \
 ## GD
-  && apk add freetype freetype-dev libjpeg-turbo libjpeg-turbo-dev libpng libpng-dev \
-  && docker-php-ext-configure gd --with-freetype --with-jpeg \
-  && docker-php-ext-install exif gd \
-  && apk del freetype-dev libjpeg-turbo-dev libpng-dev \
+  if [ "${INSTALL_GD}" = "1" ] ; then \
+    apk add freetype freetype-dev libjpeg-turbo libjpeg-turbo-dev libpng libpng-dev && \
+    docker-php-ext-configure gd \
+      --with-freetype --with-jpeg && \
+    docker-php-ext-install exif gd && \
+    apk del freetype-dev libjpeg-turbo-dev libpng-dev ; \
+  fi ; \
 ## XDEBUG
 #  && pecl install xdebug-$XDEBUG_VERSION \
 #  && docker-php-ext-enable --ini-name 20-xdebug.ini xdebug \
-## Mandatory for PHP 5.6 - setup default TimeZone
-#  && echo "date.timezone = UTC" >> $PHP_INI_DIR/php.ini \
-  && echo "date.timezone = Asia/Yekaterinburg" >> $PHP_INI_DIR/php.ini \
 ## Clean up
-  && apk del .phpize-deps \
+  apk del .phpize-deps \
   && docker-php-source delete \
   && rm -rf /var/cache/apk/* \
   && rm -rf /usr/share/php7 \
   && rm -rf /tmp/*
 
 ### Tuning PHP
+ARG MAX_EXECUTION_TIME="30"
 ARG MEMORY_LIMIT="256M"
 ARG UPLOAD_MAX_SIZE="8M"
+ARG TIME_ZONE="UTC"
 RUN set -ex && \
 ##  sed -i 's/pm.max_children = 5/pm.max_children = 20/; s/pm.start_servers = 2/pm.start_servers = 3/; s/pm.min_spare_servers = 1/pm.min_spare_servers = 1/; s/pm.max_spare_servers = 3/pm.max_spare_servers = 8/' /usr/local/etc/php-fpm.d/www.conf && \
+  echo "date.timezone = $TIME_ZONE" >> $PHP_INI_DIR/php.ini && \
   echo "memory_limit = $MEMORY_LIMIT" >> $PHP_INI_DIR/php.ini && \
-#  echo "max_execution_time = 120" >> $PHP_INI_DIR/php.ini && \
+  echo "max_execution_time = $MAX_EXECUTION_TIME" >> $PHP_INI_DIR/php.ini && \
   echo "upload_max_filesize = $UPLOAD_MAX_SIZE" >> $PHP_INI_DIR/php.ini && \
   echo "post_max_size = $UPLOAD_MAX_SIZE" >> $PHP_INI_DIR/php.ini && \
 ## Done

@@ -12,6 +12,11 @@ Compose for PHP-apps
 * edit `.env`
 * (optional) make & edit `docker-compose.override.yml` from example file
 
+## Configure PECL modules
+
+**PHP7+** : You can enable or disable PECL modules (examples: MySQL, pgSQL, Redis etc.)
+by setting BUILD-ARGs in `docker-compose.override.yml`
+
 ## Usage
 
 * `docker-compose up` - Run in foreground
