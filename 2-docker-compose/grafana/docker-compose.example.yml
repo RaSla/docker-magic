@@ -3,7 +3,7 @@ version: '2.4'
 services:
 
   prometheus:
-    image: prom/prometheus  # v2.36.2
+    image: prom/prometheus  # v2.52.0 / v2.45.5 LTS
     container_name: prometheus
     hostname: prometheus
     command:
@@ -22,7 +22,7 @@ services:
       - ./prometheus/:/etc/prometheus/
 
   grafana:
-    image: grafana/grafana  # 9.0.2 / 8.5.6 / 7.5.16 / 6.7.6  -  https://hub.docker.com/r/grafana/grafana/tags
+    image: grafana/grafana  # 11.0.0 / 10.4.3 / 9.5.19 -  https://hub.docker.com/r/grafana/grafana/tags
     container_name: grafana
     hostname: grafana
     depends_on:
@@ -41,7 +41,7 @@ services:
       - ./grafana/provisioning/:/etc/grafana/provisioning/
 
   alertmanager:
-    image: prom/alertmanager  # v0.24.0
+    image: prom/alertmanager  # v0.27.0
     container_name: alertmanager
     hostname: alertmanager
     command:
@@ -56,7 +56,7 @@ services:
 
 ### EXPORTERS
   blackbox:
-    image: prom/blackbox-exporter  # v0.21.1
+    image: prom/blackbox-exporter  # v0.25.0
     container_name: blackbox
     hostname: blackbox
     command:
@@ -68,24 +68,24 @@ services:
       - ./blackbox:/etc/blackbox
 
   # https://github.com/google/cadvisor
-  cadvisor:
-    image: gcr.io/cadvisor/cadvisor:v0.39.3  # v0.39.3
-    container_name: cadvisor
-    hostname: cadvisor
-    #ports:
-    #  - 8080:8080
-    privileged: true
-    restart: always
-    volumes:
-      - /:/rootfs:ro
-      - /var/run:/var/run:ro
-      - /sys:/sys:ro
-      - /var/lib/docker/:/var/lib/docker:ro
-      - /dev/disk/:/dev/disk:ro
+#  cadvisor:
+#    image: gcr.io/cadvisor/cadvisor:v0.49.1  # v0.49.1
+#    container_name: cadvisor
+#    hostname: cadvisor
+#    #ports:
+#    #  - ${CADVISOR_PORT:-48080}:8080
+#    privileged: true
+#    restart: always
+#    volumes:
+#      - /:/rootfs:ro
+#      - /var/run:/var/run:ro
+#      - /sys:/sys:ro
+#      - /var/lib/docker/:/var/lib/docker:ro
+#      - /dev/disk/:/dev/disk:ro
 
   # https://github.com/prometheus/node_exporter
   node_exporter:
-    image: prom/node-exporter  # v1.3.1
+    image: prom/node-exporter  # v1.8.1 / v1.7.0
     container_name: node_exporter
     command:
       - '--path.procfs=/host/proc'
