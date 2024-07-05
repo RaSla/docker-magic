@@ -1,0 +1,25 @@
+version: '2.4'
+services:
+# user UID & GID  MUST BE  equal local user ID
+# rasla@devops-rasla:~/git/autoclassics/web$ id
+# uid=1000(rasla) gid=1000(rasla) ...
+  angie:
+    #container_name: front_angie
+## (optional) CPU Affinity
+    #cpuset: "0"  # ex.: "0" / "2,3"
+    #hostname: front_angie
+## (optional) start server on TCP-port < 1024 by NON-ROOT user
+    #sysctls:
+    #  net.ipv4.ip_unprivileged_port_start: 80
+## (recommended) Run as USER
+    tmpfs:
+      - /run:uid=${USER_UID:-1000}
+      - /var/cache/angie:uid=${USER_UID:-1000}
+    user: "${USER_UID:-1000}:${USER_GID:-1000}"
+## Volumes
+    volumes:
+      #- /etc/letsencrypt:/etc/letsencrypt
+      #- ./angie/ssl:/etc/letsencrypt/live
+      - ./angie/stream.d:/etc/angie/stream.d
+      ## sites
+      #- /home/beta/_sites:/home/beta/_sites

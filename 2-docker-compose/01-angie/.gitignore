@@ -1,0 +1,13 @@
+.env
+docker-compose.override.yml
+
+## SSL Certificates and DH parameters
+angie/http.d/_dhparam.pem
+angie/ssl/
+## Logs
+angie/log/
+
+## Backup- and local- version
+*~
+*.bak
+*.local

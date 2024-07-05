@@ -1,0 +1,21 @@
+version: '2.4'
+services:
+
+  angie:
+    image: docker.angie.software/angie:1.6.0-alpine
+    ports:
+      - "${ANGIE_HTTP_PORT:-0.0.0.0:80}:8080"
+      - "${ANGIE_HTTPS_PORT:-0.0.0.0:443}:443"
+      - "${ANGIE_HTTP3_PORT:-0.0.0.0:443}:443/udp"
+    restart: always
+    volumes:
+      #- /etc/letsencrypt:/etc/letsencrypt
+      - ./angie/http.d:/etc/angie/http.d
+      - ./angie/log:/var/log/angie
+      - ./angie/angie.conf:/etc/angie/angie.conf
+
+# docker network create app
+networks:
+  default:
+    external:
+      name: "app"

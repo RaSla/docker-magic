@@ -1,0 +1,23 @@
+### SBTWS - dev - LDAP-389 ###
+###
+server {
+  listen 389;
+  proxy_pass back-sbtws-ldap-dev-389;
+}
+upstream back-sbtws-ldap-dev-389 {
+#  zone sbtws-ldap-dev-389 10m;
+  server 10.27.0.9:389;
+}
+
+### SBTWS - MailHog - TCP-1025 ###
+###
+server {
+  listen 1025;
+  proxy_pass back-sbtws-k8s-dev-1025;
+}
+upstream back-sbtws-k8s-dev-1025 {
+#  zone sbtws-k8s-dev-7777 10m;
+  server 10.27.254.3:30025;
+  server 10.27.254.2:30025 backup;
+  server 10.27.254.120:1025 backup;
+}

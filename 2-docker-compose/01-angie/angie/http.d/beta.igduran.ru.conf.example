@@ -1,0 +1,98 @@
+### HTTPS ###
+###
+server {
+  listen 8080;  # local
+  listen 443 ssl;  # http2 - 1.9.5-1.25.0
+#  listen 443 quic;  # quic - 1.25.1+
+#  listen [::]:443 ssl;  # http2 - 1.9.5-1.25.0
+#  listen [::]:443 quic;
+# add_header Alt-Svc 'h3=":443"; ma=86400';  # quic
+  server_name beta.igduran.ru;
+
+  access_log /var/log/angie/beta.igduran.ru-access.log combined buffer=16k flush=1s if=$loggable;
+  error_log  /var/log/angie/beta.igduran.ru-error.log error; #/dev/null crit;
+
+  root /home/beta/_sites/beta.igduran.ru/webroot;
+  index index.html index.htm index.php;
+
+  include http.d/_tls-12.config;
+  include http.d/_tls-hsts.config;
+  include http.d/_tls-xss-block.config;
+  ssl_certificate_key     /etc/letsencrypt/live/igduran.ru_ecc/privkey.pem;
+  ssl_certificate         /etc/letsencrypt/live/igduran.ru_ecc/fullchain.pem;
+  ssl_trusted_certificate /etc/letsencrypt/live/igduran.ru_ecc/chain.pem;
+
+  set_real_ip_from  192.168.0.0/16;
+  real_ip_header    X-Forwarded-For;
+  real_ip_recursive on;
+
+  location = /_livez {
+    access_log off;
+    default_type text/plain;
+    return 200;
+  }
+
+## deny access to .htaccess / .gitignore / .{any_file_starting_with_dot} files
+  location ~ /\. {
+    deny  all;
+    log_not_found off;
+    access_log off;
+  }
+  location = /favicon.ico {
+    log_not_found off;
+    access_log off;
+  }
+  location = /robots.txt {
+    allow all;
+    log_not_found off;
+    access_log off;
+  }
+  location /wp-login.php {
+    return 404;
+    access_log off;
+  }
+
+### DRUPAL 7+
+# Don't allow direct access to PHP files in the vendor directory.
+  location ~ \..*/.*\.php$ {
+    return 403;
+  }
+  location ~ ^/sites/.*/private/ {
+    return 403;
+  }
+##  Handle private files through Drupal.
+#  location ~ ^/system/files/ { # For Drupal >= 7
+#    try_files $uri /index.php?$query_string;
+#  }
+  location / {
+    try_files $uri /index.php?$query_string; # For Drupal >= 7
+  }
+  location ~ /vendor/.*\.php$ {
+    deny all;
+    return 404;
+  }
+
+# Fighting with Styles? This little gem is amazing.
+  location @rewrite {
+    rewrite ^/(.*)$ /index.php?q=$1;
+  }
+  location ~ ^/files/styles/ { # For Drupal >= 7
+    try_files $uri @rewrite;
+  }
+
+# PHP backend
+  location ~ \.php$ {
+    try_files $uri /index.php =404;
+    fastcgi_split_path_info ^(.+\.php)(/.+)$;
+    fastcgi_index index.php;
+    fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    fastcgi_pass beta72-upstream;
+    include fastcgi_params;
+  }
+}
+
+upstream beta72-upstream {
+  zone beta-72 10m;
+  server 172.17.0.1:9072;  # docker host
+  #server 192.168.100.104:9072 backup;
+}
