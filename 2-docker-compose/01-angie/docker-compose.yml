@@ -2,7 +2,7 @@ version: '2.4'
 services:
 
   angie:
-    image: docker.angie.software/angie:1.6.0-alpine
+    image: docker.angie.software/angie:1.6.1-alpine
     ports:
       - "${ANGIE_HTTP_PORT:-0.0.0.0:80}:8080"
       - "${ANGIE_HTTPS_PORT:-0.0.0.0:443}:443"
