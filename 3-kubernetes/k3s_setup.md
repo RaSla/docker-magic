@@ -230,7 +230,8 @@ $ mv k9s ~/.local/bin/
 $ rm k9s_Linux_*.tar.gz
 ```
 
-### 5. HELM v3
+### 5.a HELM v3
+
 ```console
 $ HELM_VERSION=v3.10.3
 $ wget https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz
@@ -256,6 +257,23 @@ Hang tight while we grab the latest from your chart repositories...
 Update Complete. ⎈Happy Helming!⎈
 ```
 See more - [helm.sh/docs/intro/quickstart/](https://helm.sh/docs/intro/quickstart/)
+
+### 5.b. WERF
+
+See more - <https://werf.io/>
+
+```console
+$ WERF_VERSION=2.10.5
+$ wget https://tuf.werf.io/targets/releases/${WERF_VERSION}/linux-amd64/bin/werf
+$ chmod +x werf
+
+## ROOT
+$ sudo mv werf /usr/local/bin/helm
+$ sudo werf completion bash > /etc/bash_completion.d/werf
+## ROOTLESS
+$ mv werf ~/.local/bin/
+$ echo 'if [ $(which werf | wc -l) = "1" ]; then source <(werf completion bash) ; fi' >> ~/.bashrc
+```
 
 ### 6. Ingress-Nginx 
 ```console
