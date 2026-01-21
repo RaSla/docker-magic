@@ -6,7 +6,7 @@ services:
     links:
       - py3
     ports:
-      - 80:80
+      - "${HTTP_HOST_PORT}:8080"
     restart: always
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
@@ -16,7 +16,7 @@ services:
       context: ./py3
       dockerfile: ./Dockerfile
     expose:
-      - 8080
+      - "${HTTP_HOST_PORT}"
     restart: always
     scale: 2
     volumes:
